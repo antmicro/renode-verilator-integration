@@ -1,0 +1,1 @@
+This repository contains a sample AXI UART Lite Verilog model along with the wrapper code to connect it to `Renode <http://github.com/renode/renode>`_. 
