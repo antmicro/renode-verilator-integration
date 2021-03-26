@@ -1,0 +1,23 @@
+diff --git a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode.cpp b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode.cpp
+index cfb0269..f0169be 100644
+--- a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode.cpp
++++ b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode.cpp
+@@ -83,6 +83,7 @@ void RenodeAgent::reset()
+         b->reset();
+ }
+ 
++#include <unistd.h>
+ void RenodeAgent::simulate(int receiverPort, int senderPort)
+ {
+     mainSocket->Connect("127.0.0.1", std::to_string(receiverPort));
+@@ -93,7 +94,10 @@ void RenodeAgent::simulate(int receiverPort, int senderPort)
+     handshakeValid();
+     reset();
+ 
++    int iter = 0;
+     while(isConnected) {
++        if(++iter > 1000) sleep(600);
++
+         result = receive();
+         switch(result->actionId) {
+             case invalidAction:

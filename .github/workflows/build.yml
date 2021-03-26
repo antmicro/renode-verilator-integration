@@ -1,0 +1,73 @@
+name: build-verilated-peripherals
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+    inputs:
+      renode_gitrev:
+        description: 'Renode git revision'
+        required: false
+        default: ''
+
+env:
+  RENODE_GITREV: "${{ github.event.inputs.renode_gitrev }}"
+  VERILATOR_VERSION: "4.200"
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { arch: "x86_64", os: "ubuntu-latest"  }
+          - { arch: "x86_64", os: "macos-latest"   }
+          - { arch: "x86_64", os: "windows-latest" }
+    defaults:
+      run:
+        shell: bash
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/cache@v2
+        with:
+          path: ccache
+          key: ${{ runner.os }}-${{ matrix.config.arch }}
+
+      - name: Setup MSYS2
+        uses: msys2/setup-msys2@v2
+        if: ${{ runner.os == 'Windows' }}
+        with:
+          update: true
+          install: >-
+            git
+            mingw-w64-x86_64-cmake
+            mingw-w64-x86_64-gcc
+            mingw-w64-x86_64-make
+            patch
+
+      - name: Build peripherals for Windows
+        if: ${{ runner.os == 'Windows' }}
+        shell: msys2 {0}
+        run: |
+          set -ex
+          RUNNER_OS="Windows"
+          MAKE_BIN="mingw32-make.exe"
+          BUILD_ARCH=${{ matrix.config.arch }}
+          source .github/scripts/build-verilator.sh
+          source .github/scripts/build.sh
+
+      - name: Build peripherals for ${{ runner.os }}
+        if: ${{ runner.os != 'Windows' }}
+        run: |
+          set -ex
+          RUNNER_OS=${{ runner.os }}
+          MAKE_BIN="make"
+          BUILD_ARCH=${{ matrix.config.arch }}
+          source .github/scripts/build-verilator.sh
+          source .github/scripts/build.sh
+
+      - uses: actions/upload-artifact@v2
+        with:
+          name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
+          path: artifacts/*

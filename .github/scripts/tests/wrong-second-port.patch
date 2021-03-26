@@ -1,0 +1,13 @@
+diff --git a/samples/uartlite/sim_main.cpp b/samples/uartlite/sim_main.cpp
+index 4db6904..06e9ee9 100644
+--- a/samples/uartlite/sim_main.cpp
++++ b/samples/uartlite/sim_main.cpp
+@@ -85,7 +85,7 @@ int main(int argc, char **argv, char **env) {
+     tfp->open("simx.vcd");
+ #endif
+     Init();
+-    uart->simulate(atoi(argv[1]), atoi(argv[2]));
++    uart->simulate(atoi(argv[1]), atoi(argv[2])+5);
+     top->final();
+     exit(0);
+ }
