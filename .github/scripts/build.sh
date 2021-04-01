@@ -8,6 +8,8 @@ fi
 if [ "$RUNNER_OS" = "Windows" ]; then
     BIN_SUFFIX=".exe"
     MAKE_TYPE="MinGW"
+elif [ "$RUNNER_OS" = "Linux" ]; then
+    EXTRA_CMAKE_VARS="-DLIBOPENLIBM=$GITHUB_WORKSPACE/lib/libopenlibm-Linux-x86_64.a"
 fi
 
 ARTIFACTS_DIR="$PWD/artifacts"
@@ -21,7 +23,7 @@ function build {
     pushd $1
     mkdir build
     cd build
-    cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_DIR ..
+    cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_DIR $EXTRA_CMAKE_VARS ..
     $MAKE_BIN VERBOSE=1
 
     # Check dependencies on Linux and Windows
