@@ -86,8 +86,23 @@ endif()
 # Default arguments for compilation and linking
 list(APPEND PROJECT_COMP_ARGS -Wall)
 
-if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux" AND ${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
-  list(APPEND PROJECT_LINK_ARGS -static-libstdc++ -static-libgcc)
+if(${CMAKE_SYSTEM_NAME} STREQUAL "Linux")
+  set(LIBOPENLIBM CACHE PATH "Absolute (!) path to the OpenLibm library (<RENODE_VERILATOR_INTEGRATION_PATH>/lib/libopenlibm-Linux-<TARGET_ARCH>.a). Use it for enhanced portability.")
+  # Link OpenLibm if LIBOPENLIBM is correctly set
+  if(LIBOPENLIBM)
+    if(EXISTS ${LIBOPENLIBM} AND IS_ABSOLUTE ${LIBOPENLIBM})
+      # `-Wl,--as-needed` in case it isn't passed to the linker by default
+      #   (e.g. Debian's g++ v8.3.0-6)
+      list(APPEND PROJECT_LINK_ARGS ${LIBOPENLIBM} -Wl,--as-needed)
+    else()
+      message(FATAL_ERROR "LIBOPENLIBM ('${LIBOPENLIBM}') has to be an absolute path!")
+    endif()
+  else()
+    message(WARNING "It is highly advised to use OpenLibm for portability reasons. To do so, run CMake with '-DLIBOPENLIBM=<REPOSITORY_ABSOLUTE_PATH>/lib/libopenlibm-Linux-<TARGET_ARCH>.a' or set LIBOPENLIBM variable through 'ccmake'/'cmake-gui'.")
+  endif()
+  if(${CMAKE_CXX_COMPILER_ID} STREQUAL "GNU")
+    list(APPEND PROJECT_LINK_ARGS -static-libstdc++ -static-libgcc)
+  endif()
 endif()
 
 if(CMAKE_HOST_WIN32)
