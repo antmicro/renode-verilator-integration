@@ -11,9 +11,9 @@ endif
 default:
 	@echo "-- Verilator - Renode integration - FastVDMA example"
 	@echo "-- VERILATE ----------------"
-	$(VERILATOR) -cc DMATop.v --exe -CFLAGS "-Wpedantic -Wall -I$(INTEGRATION_DIR)" sim_main.cpp $(INTEGRATION_DIR)/src/renode.cpp $(INTEGRATION_DIR)/src/buses/axi.cpp $(INTEGRATION_DIR)/src/buses/axi-slave.cpp $(INTEGRATION_DIR)/src/buses/axilite.cpp
+	$(VERILATOR) -cc DMATop.v --exe -CFLAGS "-Wpedantic -Wall -I$(INTEGRATION_DIR)" sim_main.cpp $(INTEGRATION_DIR)/src/renode.cpp $(INTEGRATION_DIR)/src/buses/axi.cpp $(INTEGRATION_DIR)/src/buses/axi-slave.cpp $(INTEGRATION_DIR)/src/buses/axilite.cpp $(INTEGRATION_DIR)/libs/socket-cpp/Socket/TCPClient.cpp $(INTEGRATION_DIR)/libs/socket-cpp/Socket/Socket.cpp
 	@echo "-- COMPILE -----------------"
-	LDLIBS="-lzmq -lpthread" $(MAKE) -j 4 -C obj_dir -f VDMATop.mk
+	$(MAKE) -j 4 -C obj_dir -f VDMATop.mk
 	@echo "The output file is \`obj_dir/VDMATop\`."
 
 clean:

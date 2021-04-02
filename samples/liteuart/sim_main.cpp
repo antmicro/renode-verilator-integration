@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2020 Antmicro
+// Copyright (c) 2010-2021 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -42,9 +42,9 @@ void Init() {
     //=================================================
     bus->wb_clk = &top->clk100;
     bus->wb_rst = &top->rst0;
-    bus->wb_addr = (unsigned long *)&top->wb_adr;
-    bus->wb_rd_dat = (unsigned long *)&top->wb_dat_r;
-    bus->wb_wr_dat = (unsigned long *)&top->wb_dat_w;
+    bus->wb_addr = (unsigned long long *)&top->wb_adr;
+    bus->wb_rd_dat = (unsigned long long *)&top->wb_dat_r;
+    bus->wb_wr_dat = (unsigned long long *)&top->wb_dat_w;
     bus->wb_we = &top->wb_we;
     bus->wb_sel = &top->wb_sel;
     bus->wb_stb = &top->wb_stb;

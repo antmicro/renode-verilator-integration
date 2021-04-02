@@ -11,9 +11,9 @@ endif
 default:
 	@echo "-- Verilator - Renode integration - EOS S3 PWM_GEN example"
 	@echo "-- VERILATE ----------------"
-	$(VERILATOR) -cc top.v --exe -CFLAGS "-Wpedantic -Wall -I$(INTEGRATION_DIR) " sim_main.cpp $(INTEGRATION_DIR)/src/renode.cpp $(INTEGRATION_DIR)/src/buses/wishbone.cpp $(INTEGRATION_DIR)/src/peripherals/uart.cpp
+	$(VERILATOR) -cc top.v --exe -CFLAGS "-Wpedantic -Wall -I$(INTEGRATION_DIR) " sim_main.cpp $(INTEGRATION_DIR)/src/renode.cpp $(INTEGRATION_DIR)/src/buses/wishbone.cpp $(INTEGRATION_DIR)/src/peripherals/uart.cpp $(INTEGRATION_DIR)/libs/socket-cpp/Socket/TCPClient.cpp $(INTEGRATION_DIR)/libs/socket-cpp/Socket/Socket.cpp
 	@echo "-- COMPILE -----------------"
-	LDLIBS="-lzmq -lpthread" $(MAKE) -j 4 -C obj_dir -f Vtop.mk
+	$(MAKE) -j 4 -C obj_dir -f Vtop.mk
 	@echo "The output file is \`obj_dir/Vtop\`."
 
 clean:

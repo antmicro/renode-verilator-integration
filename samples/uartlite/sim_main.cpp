@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2019 Antmicro
+// Copyright (c) 2010-2021 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -41,20 +41,20 @@ void Init() {
     //=================================================
     bus->clk = &top->clk;
     bus->rst = &top->rst;
-    bus->awaddr = (unsigned long *)&top->awaddr;
+    bus->awaddr = (unsigned long long *)&top->awaddr;
     bus->awvalid = &top->awvalid;
     bus->awready = &top->awready;
-    bus->wdata = (unsigned long *)&top->wdata;
+    bus->wdata = (unsigned long long *)&top->wdata;
     bus->wstrb = &top->wstrb;
     bus->wvalid = &top->wvalid;
     bus->wready = &top->wready;
     bus->bresp = &top->bresp;
     bus->bvalid = &top->bvalid;
     bus->bready = &top->bready;
-    bus->araddr = (unsigned long *)&top->araddr;
+    bus->araddr = (unsigned long long *)&top->araddr;
     bus->arvalid = &top->arvalid;
     bus->arready = &top->arready;
-    bus->rdata = (unsigned long *)&top->rdata;
+    bus->rdata = (unsigned long long *)&top->rdata;
     bus->rresp = &top->rresp;
     bus->rvalid = &top->rvalid;
     bus->rready = &top->rready;
