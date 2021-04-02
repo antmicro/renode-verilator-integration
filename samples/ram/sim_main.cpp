@@ -40,7 +40,7 @@ void Init() {
     bus->aresetn = &top->rst;
 
     bus->awid = &top->s_axi_awid;
-    bus->awaddr = (unsigned int *) &top->s_axi_awaddr;
+    bus->awaddr = (uint32_t *) &top->s_axi_awaddr;
     bus->awlen = &top->s_axi_awlen;
     bus->awsize = &top->s_axi_awsize;
     bus->awburst = &top->s_axi_awburst;
@@ -62,7 +62,7 @@ void Init() {
     bus->bready = &top->s_axi_bready;
 
     bus->arid = &top->s_axi_arid;
-    bus->araddr = (unsigned int *) &top->s_axi_araddr;
+    bus->araddr = (uint32_t *) &top->s_axi_araddr;
     bus->arlen = &top->s_axi_arlen;
     bus->arsize = &top->s_axi_arsize;
     bus->arburst = &top->s_axi_arburst;

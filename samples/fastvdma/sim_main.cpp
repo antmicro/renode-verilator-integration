@@ -41,22 +41,22 @@ void Init() {
     //=================================================
     bus->clk = &top->clock;
     bus->rst = &top->reset;
-    bus->awaddr = (unsigned long long *)&top->io_control_aw_awaddr;
+    bus->awaddr = (uint64_t *)&top->io_control_aw_awaddr;
     bus->awprot = &top->io_control_aw_awprot;
     bus->awvalid = &top->io_control_aw_awvalid;
     bus->awready = &top->io_control_aw_awready;
-    bus->wdata = (unsigned long long *)&top->io_control_w_wdata;
+    bus->wdata = (uint64_t *)&top->io_control_w_wdata;
     bus->wstrb = &top->io_control_w_wstrb;
     bus->wvalid = &top->io_control_w_wvalid;
     bus->wready = &top->io_control_w_wready;
     bus->bresp = &top->io_control_b_bresp;
     bus->bvalid = &top->io_control_b_bvalid;
     bus->bready = &top->io_control_b_bready;
-    bus->araddr = (unsigned long long *)&top->io_control_ar_araddr;
+    bus->araddr = (uint64_t *)&top->io_control_ar_araddr;
     bus->arprot = &top->io_control_ar_arprot;
     bus->arvalid = &top->io_control_ar_arvalid;
     bus->arready = &top->io_control_ar_arready;
-    bus->rdata = (unsigned long long *)&top->io_control_r_rdata;
+    bus->rdata = (uint64_t *)&top->io_control_r_rdata;
     bus->rresp = &top->io_control_r_rresp;
     bus->rvalid = &top->io_control_r_rvalid;
     bus->rready = &top->io_control_r_rready;
