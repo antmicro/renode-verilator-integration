@@ -15,8 +15,8 @@ fi
 ARTIFACTS_DIR="$PWD/artifacts"
 mkdir -p $ARTIFACTS_DIR
 
-git clone -b "${RENODE_GITREV:-master}" https://github.com/renode/renode.git
-RENODE_DIR="$PWD/renode"
+#git clone -b "${RENODE_GITREV:-master}" https://github.com/renode/renode.git
+RENODE_DIR="$PWD/VerilatorIntegrationLibrary"
 
 # Usage: build SOURCE_DIR [OUT_NAME]
 function build {
