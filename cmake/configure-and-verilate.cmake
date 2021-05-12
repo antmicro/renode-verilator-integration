@@ -27,7 +27,7 @@ if(CMAKE_HOST_WIN32)
         execute_process(COMMAND ${CYGPATH_BIN} -m -a ${PATH} OUTPUT_VARIABLE CYGPATHED_PATH OUTPUT_STRIP_TRAILING_WHITESPACE)
         if(IS_DIRECTORY ${CYGPATHED_PATH})
           set(${PATH_VAR_NAME} "${CYGPATHED_PATH}")
-          message("Repaired path: '${PATH}' to '${CYGPATHED_PATH}'.")
+          message(STATUS "Repaired ${PATH_VAR_NAME}: '${CYGPATHED_PATH}'")
         endif()
       endif()
     endif()
@@ -42,7 +42,7 @@ if(NOT VIL_DIR)
     message(FATAL_ERROR "Please set the CMake's USER_RENODE_DIR variable to an absolute (!) path to Renode root directory or any other that contains VerilatorIntegrationLibrary.\nPass the '-DUSER_RENODE_DIR=<ABSOLUTE_PATH>' switch if you configure with the 'cmake' command. Optionally, consider using 'ccmake' or 'cmake-gui' which make it easier.")
   endif()
   
-  message("-- Looking for Renode VerilatorIntegrationLibrary inside ${USER_RENODE_DIR}...")
+  message(STATUS "Looking for Renode VerilatorIntegrationLibrary inside ${USER_RENODE_DIR}...")
   set(VIL_FILE verilator-integration-library.cmake)
   # Look for the ${VIL_FILE} in the whole ${USER_RENODE_DIR} tree
   #   (don't use `/*/` as then an additional directory is required between the two)
@@ -61,7 +61,7 @@ if(NOT VIL_DIR)
   endif()
   
   include(${VIL_DIR}/${VIL_FILE})  # sets VIL_VERSION variable
-  message("-- Renode VerilatorIntegrationLibrary (version ${VIL_VERSION}) found in ${VIL_DIR}.")
+  message(STATUS "Renode VerilatorIntegrationLibrary (version ${VIL_VERSION}) found in ${VIL_DIR}.")
   
   # Check if VIL_VERSION is acceptable
   if(NOT IGNORE_VIL_VERSION)
