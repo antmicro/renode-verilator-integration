@@ -16,7 +16,12 @@ mark_as_advanced(CMAKE_INSTALL_PREFIX verilator_DIR VERILATOR_ROOT VERILATOR_BIN
 
 # Finding Verilator and Renode's 'VerilatorIntegrationLibrary'
 
-set(USER_RENODE_DIR CACHE PATH "Absolute (!) path to Renode root directory or any other that contains VerilatorIntegrationLibrary.")
+if(NOT USER_RENODE_DIR AND DEFINED ENV{RENODE_ROOT})
+  message(STATUS "Using RENODE_ROOT from environment as USER_RENODE_DIR")
+  set(USER_RENODE_DIR $ENV{RENODE_ROOT} CACHE PATH "Absolute (!) path to Renode root directory or any other that contains VerilatorIntegrationLibrary.")
+else()
+  set(USER_RENODE_DIR CACHE PATH "Absolute (!) path to Renode root directory or any other that contains VerilatorIntegrationLibrary.")
+endif()
 
 if(CMAKE_HOST_WIN32)
   macro(_try_repair_path PATH_VAR_NAME)
@@ -77,6 +82,11 @@ endif()
 
 file(GLOB_RECURSE RENODE_SOURCES ${VIL_DIR}/*.cpp)
 
+if(IS_DIRECTORY "${USER_VERILATOR_DIR}" AND DEFINED ENV{VERILATOR_ROOT})
+  # Verilator CMake logic prioritizes VERILATOR_ROOT environment variable
+  message(STATUS "Using USER_VERILATOR_DIR over VERILATOR_ROOT env. var.")
+  set(ENV{VERILATOR_ROOT} ${USER_VERILATOR_DIR})
+endif()
 find_package(verilator HINTS ${USER_VERILATOR_DIR} $ENV{VERILATOR_ROOT})
 if(NOT verilator_FOUND)
   set(USER_VERILATOR_DIR CACHE PATH "Path to the Verilator's root directory.")
