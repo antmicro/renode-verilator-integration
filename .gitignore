@@ -6,3 +6,8 @@
 .vscode
 obj_*
 logs
+
+cmake_install.cmake
+CMakeFiles
+CMakeCache.txt
+Makefile
