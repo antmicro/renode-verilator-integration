@@ -19,7 +19,7 @@
 #include "src/buses/axilite.h"
 
 RenodeAgent *fastvdma;
-VDMATop *top;
+VDMATop *top = new VDMATop;
 VerilatedVcdC *tfp;
 vluint64_t main_time = 0;
 
@@ -32,7 +32,7 @@ void eval() {
     top->eval();
 }
 
-void Init() {
+RenodeAgent *Init() {
     AxiLite* bus = new AxiLite();
     AxiSlave* slaveBus = new AxiSlave(32, 32);
 
@@ -123,16 +123,17 @@ void Init() {
     fastvdma->addBus(slaveBus);
 
     slaveBus->setAgent(fastvdma);
+    return fastvdma;
 }
 
 int main(int argc, char **argv, char **env) {
     if(argc < 3) {
-        printf("Usage: %s {receiverPort} {senderPort}\n", argv[0]);
+        printf("Usage: %s {receiverPort} {senderPort} [{address}]\n", argv[0]);
         exit(-1);
     }
+    const char *address = argc < 4 ? "127.0.0.1" : argv[3];
 
     Verilated::commandArgs(argc, argv);
-    top = new VDMATop;
 #if VM_TRACE
     Verilated::traceEverOn(true);
     tfp = new VerilatedVcdC;
@@ -140,7 +141,7 @@ int main(int argc, char **argv, char **env) {
     tfp->open("simx.vcd");
 #endif
     Init();
-    fastvdma->simulate(atoi(argv[1]), atoi(argv[2]));
+    fastvdma->simulate(atoi(argv[1]), atoi(argv[2]), address);
     top->final();
     exit(0);
 }

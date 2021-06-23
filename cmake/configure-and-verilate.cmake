@@ -134,9 +134,12 @@ if(CMAKE_HOST_WIN32)
   endif()
 endif()
 
-set(FINAL_COMP_ARGS ${PROJECT_COMP_ARGS} ${COMP_ARGS} CACHE STRING "Extra arguments/switches for compilation.")
-set(FINAL_LINK_ARGS ${PROJECT_LINK_ARGS} ${LINK_ARGS} CACHE STRING "Extra arguments/switches for linking.")
-set(FINAL_VERI_ARGS ${VERI_ARGS}                      CACHE STRING "Extra arguments/switches for Verilating.")
+set(FINAL_EXEC_COMP_ARGS ${PROJECT_COMP_ARGS} ${COMP_EXEC_ARGS} CACHE STRING "Extra arguments/switches for compilation.")
+set(FINAL_LIB_COMP_ARGS ${PROJECT_COMP_ARGS} ${COMP_LIB_ARGS} CACHE STRING "Extra arguments/switches for compilation.")
+set(FINAL_EXEC_LINK_ARGS ${PROJECT_LINK_ARGS} ${LINK_EXEC_ARGS} CACHE STRING "Extra arguments/switches for linking.")
+set(FINAL_LIB_LINK_ARGS ${PROJECT_LINK_ARGS} ${LINK_LIB_ARGS} CACHE STRING "Extra arguments/switches for linking.")
+set(FINAL_EXEC_VERI_ARGS ${VERI_EXEC_ARGS}                      CACHE STRING "Extra arguments/switches for Verilating.")
+set(FINAL_LIB_VERI_ARGS ${VERI_LIB_ARGS}                      CACHE STRING "Extra arguments/switches for Verilating.")
 
 # The actual executable configuration
 
@@ -145,20 +148,29 @@ if(NOT CSOURCES OR NOT VTOP)
 endif()
 
 add_executable(Vtop ${CSOURCES} ${RENODE_SOURCES})
+add_library(libVtop SHARED ${CSOURCES} ${RENODE_SOURCES})
 target_include_directories(Vtop PRIVATE ${VIL_DIR})
+target_include_directories(libVtop PRIVATE ${VIL_DIR})
 
-target_compile_options(Vtop PRIVATE ${FINAL_COMP_ARGS})
-target_link_libraries(Vtop PRIVATE ${FINAL_LINK_ARGS})
+target_compile_options(Vtop PRIVATE ${FINAL_EXEC_COMP_ARGS})
+target_compile_options(libVtop PRIVATE ${FINAL_LIB_COMP_ARGS})
+target_link_libraries(Vtop PRIVATE ${FINAL_EXEC_LINK_ARGS})
+target_link_libraries(libVtop PRIVATE ${FINAL_LIB_LINK_ARGS})
 
 if(${CMAKE_CXX_COMPILER_ID} STREQUAL "AppleClang")
   # Clang defaults to -std=gnu++98 but it has to be at least c++11
   set_property(TARGET Vtop PROPERTY CXX_STANDARD 11)
+  set_property(TARGET libVtop PROPERTY CXX_STANDARD 11)
   set_property(TARGET Vtop PROPERTY CXX_STANDARD_REQUIRED)
+  set_property(TARGET libVtop PROPERTY CXX_STANDARD_REQUIRED)
 
   # Verilator for now only supports "clang", "gnu" and "msvc" in
   # "--compiler" and creates it from CMAKE_CXX_COMPILER_ID
   set(CMAKE_CXX_COMPILER_ID Clang)
 endif()
+set_target_properties(libVtop PROPERTIES OUTPUT_NAME Vtop)
 
-separate_arguments(FINAL_VERI_ARGS)
-verilate(Vtop SOURCES ${VTOP} VERILATOR_ARGS ${FINAL_VERI_ARGS})
+separate_arguments(FINAL_EXEC_VERI_ARGS)
+separate_arguments(FINAL_LIB_VERI_ARGS)
+verilate(Vtop SOURCES ${VTOP} VERILATOR_ARGS ${FINAL_EXEC_VERI_ARGS})
+verilate(libVtop SOURCES ${VTOP} VERILATOR_ARGS ${FINAL_LIB_VERI_ARGS})

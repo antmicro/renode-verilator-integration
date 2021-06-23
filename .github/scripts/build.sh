@@ -7,15 +7,19 @@ fi
 
 if [ "$RUNNER_OS" = "Windows" ]; then
     BIN_SUFFIX=".exe"
+    LIB_SUFFIX=".dll"
     MAKE_TYPE="MinGW"
 elif [ "$RUNNER_OS" = "Linux" ]; then
+    LIB_SUFFIX=".so"
     EXTRA_CMAKE_VARS="-DLIBOPENLIBM=$GITHUB_WORKSPACE/lib/libopenlibm-Linux-x86_64.a"
+elif [ "$RUNNER_OS" = "macOS" ]; then
+    LIB_SUFFIX=".dylib"
 fi
 
 ARTIFACTS_DIR="$PWD/artifacts"
 mkdir -p $ARTIFACTS_DIR
 
-git clone -b "${RENODE_GITREV:-master}" https://github.com/renode/renode.git
+git clone --recurse-submodules -b "${RENODE_GITREV:-master}" https://github.com/renode/renode.git
 RENODE_DIR="$PWD/renode"
 
 # Usage: build SOURCE_DIR [OUT_NAME]
@@ -32,6 +36,7 @@ function build {
     fi
 
     cp "Vtop$BIN_SUFFIX" "$ARTIFACTS_DIR/V${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$BIN_SUFFIX"
+    cp "libVtop$LIB_SUFFIX" "$ARTIFACTS_DIR/libV${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$LIB_SUFFIX"
     popd
     rm -rf "$1/build"
 }

@@ -1,13 +1,13 @@
 diff --git a/samples/uartlite/sim_main.cpp b/samples/uartlite/sim_main.cpp
-index 4db6904..8b34ac7 100644
+index f80e5b8..1e42fd3 100644
 --- a/samples/uartlite/sim_main.cpp
 +++ b/samples/uartlite/sim_main.cpp
-@@ -85,7 +85,7 @@ int main(int argc, char **argv, char **env) {
+@@ -84,7 +84,7 @@ int main(int argc, char **argv, char **env) {
      tfp->open("simx.vcd");
  #endif
-     Init();
--    uart->simulate(atoi(argv[1]), atoi(argv[2]));
-+    uart->simulate(atoi(argv[1])+5, atoi(argv[2])+5);
+     RenodeAgent *uart = Init();
+-    uart->simulate(atoi(argv[1]), atoi(argv[2]), address);
++    uart->simulate(atoi(argv[1]) + 5, atoi(argv[2]) + 5, address);
      top->final();
      exit(0);
  }

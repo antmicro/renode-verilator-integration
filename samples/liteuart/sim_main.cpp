@@ -21,7 +21,7 @@
 
 const int prescaler = UART_FREQ / (BAUDRATE * 8);
 UART *uart;
-Vtop *top;
+Vtop *top = new Vtop;
 VerilatedFstC *tfp;
 vluint64_t main_time = 0;
 
@@ -34,7 +34,7 @@ void eval() {
     uart->eval();
 }
 
-void Init() {
+RenodeAgent *Init() {
     Wishbone* bus = new Wishbone();
 
     //=================================================
@@ -61,16 +61,17 @@ void Init() {
     //=================================================
     const int litex_rxtx_reg = 0x800;
     uart = new UART(bus, &top->serial_tx, &top->serial_rx, prescaler, litex_rxtx_reg, &top->irq_uart0);
+    return uart;
 }
 
 int main(int argc, char **argv, char **env) {
     if(argc < 3) {
-        printf("Usage: %s {receiverPort} {senderPort}\n", argv[0]);
+        printf("Usage: %s {receiverPort} {senderPort} [{address}]\n", argv[0]);
         exit(-1);
     }
+    const char *address = argc < 4 ? "127.0.0.1" : argv[3];
 
     Verilated::commandArgs(argc, argv);
-    top = new Vtop;
 #if VM_TRACE
     Verilated::traceEverOn(true);
     tfp = new VerilatedFstC;
@@ -78,7 +79,7 @@ int main(int argc, char **argv, char **env) {
     tfp->open("simx.fst");
 #endif
     Init();
-    uart->simulate(atoi(argv[1]), atoi(argv[2]));
+    uart->simulate(atoi(argv[1]), atoi(argv[2]), address);
     top->final();
     exit(0);
 }

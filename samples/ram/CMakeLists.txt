@@ -10,9 +10,12 @@ set(VTOP axi_ram.v)
 set(CSOURCES sim_main.cpp)
 
 # Additional compiling, linking or verilating arguments (respectively)
-#set(COMP_ARGS ...)
-#set(LINK_ARGS ...)
-set(VERI_ARGS -Wno-WIDTH -Wno-CASEINCOMPLETE)
+#set(COMP_EXEC_ARGS ...)
+set(COMP_LIB_ARGS -fPIC)
+#set(LINK_EXEC_ARGS ...)
+#set(LINK_LIB_ARGS ...)
+set(VERI_EXEC_ARGS -Wno-WIDTH -Wno-CASEINCOMPLETE)
+set(VERI_LIB_ARGS -Wno-WIDTH -Wno-CASEINCOMPLETE)
 
 # CMake file doing the hard job
 include(../../cmake/configure-and-verilate.cmake)
