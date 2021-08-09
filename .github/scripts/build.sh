@@ -21,6 +21,7 @@ mkdir -p $ARTIFACTS_DIR
 
 git clone --recurse-submodules -b "${RENODE_GITREV:-master}" https://github.com/renode/renode.git
 RENODE_DIR="$PWD/renode"
+cp -R $PWD/VerilatorIntegrationLibrary $PWD/renode/src/Plugins/VerilatorPlugin
 
 # Usage: build SOURCE_DIR [OUT_NAME]
 function build {
