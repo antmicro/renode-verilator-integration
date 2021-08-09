@@ -12,7 +12,7 @@
 #if VM_TRACE
 # include <verilated_fst_c.h>
 #endif
-// uart.h and axilite.h can be found in Renode's VerilatorPlugin
+// uart.h and wishbone.h can be found in Renode's VerilatorPlugin
 #include "src/peripherals/uart.h"
 #include "src/buses/wishbone.h"
 
