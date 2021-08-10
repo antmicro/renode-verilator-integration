@@ -29,7 +29,7 @@ void APB3::timeoutTick(uint8_t* signal, uint8_t expectedValue, int timeout = 200
     }
     while((*signal != expectedValue) && timeout > 0);
 
-    if(timeout < 0) {
+    if(timeout == 0) {
         throw "Operation timeout";
     }
 }

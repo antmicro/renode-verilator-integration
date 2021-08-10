@@ -18,8 +18,8 @@ struct Axi : public BaseBus
     virtual void write(uint64_t addr, uint64_t value);
     virtual uint64_t read(uint64_t addr);
     virtual void reset();
-    void timeoutTick(uint8_t *signal, uint8_t value, int timeout = 20);
 
+    void timeoutTick(uint8_t *signal, uint8_t value, int timeout = 20);
 
     void setAgent(RenodeAgent* agent);
     RenodeAgent* agent;

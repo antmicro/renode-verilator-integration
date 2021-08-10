@@ -41,14 +41,12 @@ void Axi::tick(bool countEnable, uint64_t steps = 1)
 
 void Axi::timeoutTick(uint8_t *signal, uint8_t value, int timeout)
 {
-    do
-    {
+    do {
         tick(true);
         timeout--;
-    } 
-    while((*signal != value) && timeout > 0);
+    } while ((*signal != value) && timeout > 0);
 
-    if(timeout < 0) {
+    if (timeout == 0) {
         throw "Operation timeout";
     }
 }

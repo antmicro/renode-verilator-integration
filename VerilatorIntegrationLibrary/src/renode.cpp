@@ -66,10 +66,10 @@ void RenodeAgent::tick(bool countEnable, uint64_t steps)
         b->tick(countEnable, steps);
 }
 
-void RenodeAgent::timeoutTick(uint8_t* condition, uint8_t expectedValue, int timeout)
+void RenodeAgent::timeoutTick(uint8_t* signal, uint8_t expectedValue, int timeout)
 {
     for(BaseBus* b : interfaces)
-        b->timeoutTick(condition, expectedValue, timeout);
+        b->timeoutTick(signal, expectedValue, timeout);
 }
 
 void RenodeAgent::reset()
