@@ -89,7 +89,14 @@ if(NOT VIL_DIR)
   set(VIL_DIR ${VIL_DIR} CACHE INTERNAL "")
 endif()
 
-file(GLOB_RECURSE RENODE_SOURCES ${VIL_DIR}/*.cpp)
+
+if(NOT ${CMAKE_PROJECT_NAME} MATCHES "cfu_")
+  file(GLOB_RECURSE RENODE_SOURCES ${VIL_DIR}/*.cpp)
+  list(REMOVE_ITEM RENODE_SOURCES ${VIL_DIR}/src/buses/cfu.cpp)
+  list(REMOVE_ITEM RENODE_SOURCES ${VIL_DIR}/src/renode_cfu.cpp)
+else()
+  file(GLOB_RECURSE RENODE_SOURCES ${VIL_DIR}/cfu.cpp ${VIL_DIR}/renode_cfu.cpp)
+endif()
 
 if(IS_DIRECTORY "${USER_VERILATOR_DIR}" AND DEFINED ENV{VERILATOR_ROOT})
   # Verilator CMake logic prioritizes VERILATOR_ROOT environment variable
