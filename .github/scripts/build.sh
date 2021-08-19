@@ -28,14 +28,18 @@ function build {
     mkdir build
     cd build
     cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_DIR $EXTRA_CMAKE_VARS ..
-    $MAKE_BIN VERBOSE=1
+    if [[ "$SAMPLE" =~ "cfu_" ]]; then
+        $MAKE_BIN libVtop VERBOSE=1
+    else
+        $MAKE_BIN Vtop libVtop VERBOSE=1
+        cp "Vtop$BIN_SUFFIX" "$ARTIFACTS_DIR/V${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$BIN_SUFFIX"
 
-    # Check dependencies on Linux and Windows
-    if [ "$RUNNER_OS" != "macOS" ]; then
-        ldd "Vtop$BIN_SUFFIX"
+        # Check dependencies on Linux and Windows
+        if [ "$RUNNER_OS" != "macOS" ]; then
+            ldd "Vtop$BIN_SUFFIX"
+        fi
     fi
 
-    cp "Vtop$BIN_SUFFIX" "$ARTIFACTS_DIR/V${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$BIN_SUFFIX"
     cp "libVtop$LIB_SUFFIX" "$ARTIFACTS_DIR/libV${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$LIB_SUFFIX"
     popd
     rm -rf "$1/build"
@@ -45,7 +49,31 @@ function build {
 
 pushd samples
 for SAMPLE in *; do
-    build $SAMPLE
+    # We need to generate cfu verilog for cfu_mnv2 sample
+    if [ "$SAMPLE" == "cfu_mnv2" ] && [ "$RUNNER_OS" == "Linux" ]; then
+        wget -O- https://static.dev.sifive.com/dev-tools/riscv64-unknown-elf-gcc-8.3.0-2020.04.1-x86_64-linux-ubuntu14.tar.gz | tar -xzC /opt
+        export PATH=$PATH:/opt/riscv64-unknown-elf-gcc-8.3.0-2020.04.1-x86_64-linux-ubuntu14/bin
+
+        git clone --recurse-submodules https://github.com/google/CFU-Playground.git
+        pushd CFU-Playground
+        # Switch to a commit that is tested and works fine
+        git checkout c5cc67643996e41d2ec31571f95048108fe94caf
+        bash ./scripts/setup -ci
+
+        source environment
+
+        pushd proj/mnv2_first
+        make software SW_ONLY=1
+        popd
+        popd
+
+        cp CFU-Playground/proj/mnv2_first/cfu.v $SAMPLE
+
+        build $SAMPLE
+    elif [ "$SAMPLE" != "cfu_mnv2" ]; then
+        build $SAMPLE
+    fi
+
 done
 popd
 
