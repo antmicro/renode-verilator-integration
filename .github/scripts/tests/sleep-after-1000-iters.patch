@@ -1,7 +1,7 @@
-diff --git a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode.cpp b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode.cpp
+diff --git a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
 index 73bcb589..efb9a7a6 100644
---- a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode.cpp
-+++ b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode.cpp
+--- a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
++++ b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
 @@ -91,6 +91,7 @@ Protocol* RenodeAgent::receive()
      return communicationChannel->receive();
  }
