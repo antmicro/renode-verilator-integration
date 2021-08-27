@@ -10,13 +10,23 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdint.h>
+#if VM_TRACE
+# include <verilated_vcd_c.h>
+#endif
 #include "src/renode_cfu.h"
 #include "src/buses/cfu.h"
 
 RenodeAgent *cfu;
 Vcfu *top = new Vcfu;
+VerilatedVcdC *tfp;
+vluint64_t main_time = 0;
 
 void eval() {
+#if VM_TRACE
+    main_time++;
+    tfp->dump(main_time);
+    tfp->flush();
+#endif
     top->eval();
 }
 
@@ -47,6 +57,13 @@ RenodeAgent *Init() {
     // Init peripheral
     //=================================================
     cfu = new RenodeAgent(bus);
+
+#if VM_TRACE
+    Verilated::traceEverOn(true);
+    tfp = new VerilatedVcdC;
+    top->trace(tfp, 99);
+    tfp->open("simx.vcd");
+#endif
 
     return cfu;
 }
