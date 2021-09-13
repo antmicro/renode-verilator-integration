@@ -17,6 +17,7 @@
 #include "src/buses/axi.h"
 #include "src/buses/axi-slave.h"
 #include "src/buses/axilite.h"
+#include "src/renode_bus.h"
 
 RenodeAgent *fastvdma;
 VDMATop *top = new VDMATop;
@@ -30,6 +31,7 @@ void eval() {
         tfp->flush();
 #endif
     top->eval();
+    fastvdma->handleInterrupts();
 }
 
 RenodeAgent *Init() {
@@ -122,6 +124,9 @@ RenodeAgent *Init() {
     fastvdma = new RenodeAgent(bus);
     fastvdma->addBus(slaveBus);
 
+    fastvdma->registerInterrupt(&top->io_irq_writerDone, 0);
+    fastvdma->registerInterrupt(&top->io_irq_readerDone, 0);
+
     slaveBus->setAgent(fastvdma);
     return fastvdma;
 }
@@ -141,6 +146,7 @@ int main(int argc, char **argv, char **env) {
     tfp->open("simx.vcd");
 #endif
     Init();
+    fastvdma->reset();
     fastvdma->simulate(atoi(argv[1]), atoi(argv[2]), address);
     top->final();
     exit(0);
