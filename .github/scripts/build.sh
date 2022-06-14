@@ -57,7 +57,7 @@ for SAMPLE in *; do
         git clone --recurse-submodules https://github.com/google/CFU-Playground.git
         pushd CFU-Playground
         # Switch to a commit that is tested and works fine
-        git checkout c5cc67643996e41d2ec31571f95048108fe94caf
+        git checkout eda29975fbd57944b199cc778de25a4a54945f24
         bash ./scripts/setup -ci
 
         source environment
