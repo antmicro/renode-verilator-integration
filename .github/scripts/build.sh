@@ -51,7 +51,7 @@ pushd samples
 for SAMPLE in *; do
     # We need to generate cfu verilog for cfu_mnv2 sample
     if [ "$SAMPLE" == "cfu_mnv2" ] && [ "$RUNNER_OS" == "Linux" ]; then
-        wget -O- https://static.dev.sifive.com/dev-tools/riscv64-unknown-elf-gcc-8.3.0-2020.04.1-x86_64-linux-ubuntu14.tar.gz | tar -xzC /opt
+        wget --progress=dot:giga -O- https://static.dev.sifive.com/dev-tools/riscv64-unknown-elf-gcc-8.3.0-2020.04.1-x86_64-linux-ubuntu14.tar.gz | tar -xzC /opt
         export PATH=$PATH:/opt/riscv64-unknown-elf-gcc-8.3.0-2020.04.1-x86_64-linux-ubuntu14/bin
 
         git clone --recurse-submodules https://github.com/google/CFU-Playground.git
