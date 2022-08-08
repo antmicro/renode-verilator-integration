@@ -54,6 +54,7 @@ jobs:
           RUNNER_OS="Windows"
           MAKE_BIN="mingw32-make.exe"
           BUILD_ARCH=${{ matrix.config.arch }}
+          git submodule update --init --recursive
           source .github/scripts/build-verilator.sh
           source .github/scripts/build.sh
 
@@ -64,6 +65,7 @@ jobs:
           RUNNER_OS=${{ runner.os }}
           MAKE_BIN="make"
           BUILD_ARCH=${{ matrix.config.arch }}
+          git submodule update --init --recursive
           source .github/scripts/build-verilator.sh
           source .github/scripts/build.sh
 

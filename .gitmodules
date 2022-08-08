@@ -1,0 +1,3 @@
+[submodule "samples/cpu_ibex/ibex"]
+	path = samples/cpu_ibex/ibex
+	url = https://github.com/lowRISC/ibex.git

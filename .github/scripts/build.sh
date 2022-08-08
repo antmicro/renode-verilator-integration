@@ -12,6 +12,11 @@ if [ "$RUNNER_OS" = "Windows" ]; then
 elif [ "$RUNNER_OS" = "Linux" ]; then
     LIB_SUFFIX=".so"
     EXTRA_CMAKE_VARS="-DLIBOPENLIBM=$GITHUB_WORKSPACE/lib/libopenlibm-Linux-x86_64.a"
+
+    # install dependencies
+    sudo apt install git build-essential python3-pip wget cmake autoconf ccache flex bison perl xz-utils libfl2 libfl-dev zlib1g zlib1g-dev
+    sudo pip3 install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+    
 elif [ "$RUNNER_OS" = "macOS" ]; then
     LIB_SUFFIX=".dylib"
 fi
@@ -70,6 +75,8 @@ for SAMPLE in *; do
         cp CFU-Playground/proj/mnv2_first/cfu.v $SAMPLE
 
         build $SAMPLE
+    elif [ "$SAMPLE" == "cpu_ibex" ] && [ "$RUNNER_OS" != "Linux" ]; then
+        continue
     elif [ "$SAMPLE" != "cfu_mnv2" ]; then
         build $SAMPLE
     fi
