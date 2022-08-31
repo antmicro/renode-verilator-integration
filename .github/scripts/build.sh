@@ -95,6 +95,13 @@ function build-modified-uartlite {
     patch -R -d $2 -p1 <$PATCH
 }
 
+function build-ibex-interrupts {
+    pushd samples/cpu_ibex/irq_example/
+    ./build.sh
+    cp main.elf main.dump $ARTIFACTS_DIR
+    popd
+}
+
 # Connection Timeout
 build-modified-uartlite sleep-after-1000-iters $RENODE_DIR
 
@@ -103,5 +110,10 @@ build-modified-uartlite wrong-ports $PWD
 
 # Partial connection inability
 build-modified-uartlite wrong-second-port $PWD
+
+if [ "$RUNNER_OS" == "Linux" ]; then
+    # Ibex IRQ test
+    build-ibex-interrupts
+fi
 
 ls -lh $ARTIFACTS_DIR
