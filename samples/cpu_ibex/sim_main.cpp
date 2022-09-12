@@ -12,6 +12,9 @@
     cmake --build . --config Release
 */
 
+// See https://github.com/verilator/verilator/blob/master/docs/guide/faq.rst#why-do-i-get-undefined-reference-to-sc_time_stamp
+double sc_time_stamp() { return 0; }
+
 Ibex *ibex = nullptr;
 CpuAgent *agent = nullptr;
 vluint64_t main_time = 0;
