@@ -42,15 +42,12 @@ function build {
     cd build
 
     if [ "$SAMPLE" == "cpu_ibex" ]; then
-        # Set TOP_MODULE to "ibex_top" or "ibex_top_tracing".
-        TOP_MODULE=ibex_top
-        if [[ "$TOP_MODULE" == "ibex_top_tracing" ]]; then
-            FUSESOC_FLAGS="--RVFI"
-        fi
-
         # Generate verilator args file.
-        # Run `fusesoc` directly in shell. Using `execute_process` command in CMakeLists.txt is problematic on MSYS2 as no intermediate shell can be used. See: https://cmake.org/cmake/help/latest/command/execute_process.html.
-        fusesoc --cores-root=../ibex run --target=default --tool verilator --setup lowrisc:ibex:$TOP_MODULE $FUSESOC_FLAGS 
+        # Run `fusesoc` directly in shell. 
+        # Using `execute_process` command in CMakeLists.txt is problematic on MSYS2 as no intermediate shell can be used. 
+        # See: https://cmake.org/cmake/help/latest/command/execute_process.html.
+        TOP_MODULE="ibex_top"
+        fusesoc --cores-root=../ibex run --target=default --tool verilator --setup lowrisc:ibex:$TOP_MODULE
     fi
 
     cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_DIR $EXTRA_CMAKE_VARS ..
