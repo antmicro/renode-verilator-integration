@@ -9,16 +9,24 @@ if [ "$RUNNER_OS" = "Windows" ]; then
     BIN_SUFFIX=".exe"
     LIB_SUFFIX=".dll"
     MAKE_TYPE="MinGW"
+
+    # install dependencies for cpu_ibex sample
+    pacman --noconfirm -S --needed wget python-pip perl xz zlib
+    pip install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+
 elif [ "$RUNNER_OS" = "Linux" ]; then
     LIB_SUFFIX=".so"
     EXTRA_CMAKE_VARS="-DLIBOPENLIBM=$GITHUB_WORKSPACE/lib/libopenlibm-Linux-x86_64.a"
 
-    # install dependencies
+    # install dependencies for cpu_ibex sample
     sudo apt install git build-essential python3-pip wget cmake autoconf ccache flex bison perl xz-utils libfl2 libfl-dev zlib1g zlib1g-dev
     sudo pip3 install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
     
 elif [ "$RUNNER_OS" = "macOS" ]; then
     LIB_SUFFIX=".dylib"
+
+    # install dependencies for cpu_ibex sample
+    pip3 install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
 fi
 
 ARTIFACTS_DIR="$PWD/artifacts"
@@ -32,6 +40,16 @@ function build {
     pushd $1
     mkdir build
     cd build
+
+    if [ "$SAMPLE" == "cpu_ibex" ]; then
+        # Generate verilator args file.
+        # Run `fusesoc` directly in shell. 
+        # Using `execute_process` command in CMakeLists.txt is problematic on MSYS2 as no intermediate shell can be used. 
+        # See: https://cmake.org/cmake/help/latest/command/execute_process.html.
+        TOP_MODULE="ibex_top"
+        fusesoc --cores-root=../ibex run --target=default --tool verilator --setup lowrisc:ibex:$TOP_MODULE
+    fi
+
     cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_DIR $EXTRA_CMAKE_VARS ..
     if [[ "$SAMPLE" =~ "cfu_" ]]; then
         $MAKE_BIN libVtop VERBOSE=1
@@ -75,8 +93,6 @@ for SAMPLE in *; do
         cp CFU-Playground/proj/mnv2_first/cfu.v $SAMPLE
 
         build $SAMPLE
-    elif [ "$SAMPLE" == "cpu_ibex" ] && [ "$RUNNER_OS" != "Linux" ]; then
-        continue
     elif [ "$SAMPLE" != "cfu_mnv2" ]; then
         build $SAMPLE
     fi

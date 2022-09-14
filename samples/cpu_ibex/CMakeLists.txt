@@ -3,17 +3,11 @@ cmake_minimum_required(VERSION 3.8)
 # Name of the project
 project(ibex)
 
-set(TOP_MODULE ibex_top CACHE STRING "ibex_top or ibex_top_tracing")
 set(PREFIX ibex_top)
+set(TOP_MODULE ibex_top)
 
-if(TOP_MODULE EQUAL ibex_top_tracing)
-    set(FUSESOC_FLAGS --RVFI)
-else()
-    set(FUSESOC_FLAGS "")
-endif()
-
-# Generate verilator args file
-execute_process(COMMAND fusesoc --cores-root=${CMAKE_CURRENT_SOURCE_DIR}/ibex run --target=default --tool verilator --setup lowrisc:ibex:${TOP_MODULE} ${FUSESOC_FLAGS})
+# fusesoc command is executed outside of cmake script due to `execute_process` being not compatible with MSYS2 environment
+# execute_process(COMMAND fusesoc --cores-root=${CMAKE_CURRENT_SOURCE_DIR}/ibex run --target=default --tool verilator --setup lowrisc:ibex:${TOP_MODULE})
 
 set(DIR_NAME lowrisc_ibex_${TOP_MODULE}_0.1)
 
