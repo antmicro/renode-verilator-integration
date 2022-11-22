@@ -27,6 +27,9 @@ elif [ "$RUNNER_OS" = "macOS" ]; then
 
     # install dependencies for cpu_ibex sample
     pip3 install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+
+    # include Python Framework bin folder where fusesoc is installed
+    export PATH="$PATH":$(python3 -c 'import os, inspect; print(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(inspect.getfile(os)))), "bin"))')
 fi
 
 ARTIFACTS_DIR="$PWD/artifacts"
