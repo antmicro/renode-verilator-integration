@@ -59,14 +59,16 @@ RenodeAgent *Init() {
     bus->rready = &top->rready;
 
     //=================================================
-    // Init eval function
-    //=================================================
-    bus->evaluateModel = &eval;
-
-    //=================================================
     // Init peripheral
     //=================================================
-    return new UART(bus, &top->txd, &top->rxd, prescaler);
+    UART *uart =  new UART(bus, &top->txd, &top->rxd, prescaler);
+
+    //=================================================
+    // Init eval function
+    //=================================================
+    uart->evaluateModel = &eval;
+
+    return uart;
 }
 
 int main(int argc, char **argv, char **env) {

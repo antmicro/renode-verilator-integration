@@ -113,16 +113,15 @@ RenodeAgent *Init() {
     slaveBus->rready = &top->io_read_r_rready;
 
     //=================================================
-    // Init eval function
-    //=================================================
-    bus->evaluateModel = &eval;
-    slaveBus->evaluateModel = &eval;
-
-    //=================================================
     // Init peripheral
     //=================================================
     fastvdma = new RenodeAgent(bus);
     fastvdma->addBus(slaveBus);
+
+    //=================================================
+    // Init eval function
+    //=================================================
+    fastvdma->evaluateModel = &eval;
 
     fastvdma->registerInterrupt(&top->io_irq_writerDone, 0);
     fastvdma->registerInterrupt(&top->io_irq_readerDone, 0);

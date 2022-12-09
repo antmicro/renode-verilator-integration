@@ -51,15 +51,16 @@ RenodeAgent *Init() {
     bus->prdata = (uint32_t *)&uart_ctrl->io_apb_PRDATA;
 
     //=================================================
-    // Init eval function
-    //=================================================
-    bus->evaluateModel = &eval;
-
-    //=================================================
     // Init peripheral
     //=================================================
     const int murax_rxtx_reg = 0x0;
     uart = new UART(bus, &uart_ctrl->io_uart_txd, &uart_ctrl->io_uart_rxd, prescaler, murax_rxtx_reg, &uart_ctrl->io_interrupt);
+
+    //=================================================
+    // Init eval function
+    //=================================================
+    uart->evaluateModel = &eval;
+
     return uart;
 }
 
