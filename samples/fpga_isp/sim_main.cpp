@@ -144,12 +144,6 @@ RenodeAgent *Init() {
     axi->rready = &top->axi_rready;
 
     //=================================================
-    // Init eval function
-    //=================================================
-    axi ->evaluateModel = &eval;
-    slaveBus->evaluateModel = &eval;
-
-    //=================================================
     // Init peripheral
     //=================================================
     isp = new RenodeAgent(axi);
@@ -160,6 +154,11 @@ RenodeAgent *Init() {
 
     isp->registerInterrupt(&top->irq_dmaIn, 0);
     isp->registerInterrupt(&top->irq_dmaOut, 1);
+
+    //=================================================
+    // Init eval function
+    //=================================================
+    isp->evaluateModel = &eval;
 
 #if VM_TRACE
     Verilated::traceEverOn(true);

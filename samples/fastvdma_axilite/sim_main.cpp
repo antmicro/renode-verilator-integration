@@ -151,13 +151,6 @@ RenodeAgent *Init() {
     reader->bready = &top->io_read_b_bready;
 
     //=================================================
-    // Init eval function
-    //=================================================
-    bus->evaluateModel = &eval;
-    reader->evaluateModel = &eval;
-    writer->evaluateModel = &eval;
-
-    //=================================================
     // Init peripheral
     //=================================================
     fastvdma = new RenodeAgent(bus);
@@ -166,6 +159,12 @@ RenodeAgent *Init() {
 
     reader->setAgent(fastvdma);
     writer->setAgent(fastvdma);
+
+    //=================================================
+    // Init eval function
+    //=================================================
+    fastvdma->evaluateModel = &eval;
+
 
     fastvdma->registerInterrupt(&top->io_irq_writerDone, 0);
     fastvdma->registerInterrupt(&top->io_irq_readerDone, 0);

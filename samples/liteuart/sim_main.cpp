@@ -52,15 +52,16 @@ RenodeAgent *Init() {
     bus->wb_cyc = &top->wb_cyc;
 
     //=================================================
-    // Init eval function
-    //=================================================
-    bus->evaluateModel = &eval;
-
-    //=================================================
     // Init peripheral
     //=================================================
     const int litex_rxtx_reg = 0x800;
     uart = new UART(bus, &top->serial_tx, &top->serial_rx, prescaler, litex_rxtx_reg, &top->irq_uart0);
+
+    //=================================================
+    // Init eval function
+    //=================================================
+    uart->evaluateModel = &eval;
+
     return uart;
 }
 

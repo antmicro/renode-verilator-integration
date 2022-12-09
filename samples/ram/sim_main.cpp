@@ -79,12 +79,12 @@ RenodeAgent *Init() {
     bus->rvalid = &top->s_axi_rvalid;
     bus->rready = &top->s_axi_rready;
 
-    bus->evaluateModel = &eval;
-
     //=================================================
     // Init peripheral
     //=================================================
     axi_ram = new RenodeAgent(bus);
+
+    axi_ram->evaluateModel = &eval;
     bus->setAgent(axi_ram);
     return axi_ram;
 }
