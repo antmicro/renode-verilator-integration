@@ -21,6 +21,8 @@ elif [ "$RUNNER_OS" = "Linux" ]; then
     # install dependencies for cpu_ibex sample
     sudo apt install git build-essential python3-pip wget cmake autoconf ccache flex bison perl xz-utils libfl2 libfl-dev zlib1g zlib1g-dev
     sudo pip3 install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+    wget http://es.archive.ubuntu.com/ubuntu/pool/main/libf/libffi/libffi7_3.3-4_amd64.deb
+    sudo dpkg -i libffi7_3.3-4_amd64.deb
     
 elif [ "$RUNNER_OS" = "macOS" ]; then
     LIB_SUFFIX=".dylib"
