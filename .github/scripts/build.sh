@@ -123,13 +123,13 @@ function build-ibex-interrupts {
     popd
 }
 
-# Connection Timeout
-build-modified-uartlite sleep-after-1000-iters $RENODE_DIR
-
-# Full connection inability
-build-modified-uartlite wrong-ports $PWD
-
-# Partial connection inability
-build-modified-uartlite wrong-second-port $PWD
+## Connection Timeout
+#build-modified-uartlite sleep-after-1000-iters $RENODE_DIR
+#
+## Full connection inability
+#build-modified-uartlite wrong-ports $PWD
+#
+## Partial connection inability
+#build-modified-uartlite wrong-second-port $PWD
 
 ls -lh $ARTIFACTS_DIR
