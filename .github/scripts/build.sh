@@ -98,7 +98,7 @@ for SAMPLE in *; do
         cp CFU-Playground/proj/mnv2_first/cfu.v $SAMPLE
 
         build $SAMPLE
-    elif [ "$SAMPLE" != "cfu_mnv2" ]; then
+    elif [ "$SAMPLE" != "cfu_mnv2" ] && [ "$SAMPLE" != "cpu_ibex" ]; then
         build $SAMPLE
     fi
 
@@ -131,10 +131,5 @@ build-modified-uartlite wrong-ports $PWD
 
 # Partial connection inability
 build-modified-uartlite wrong-second-port $PWD
-
-if [ "$RUNNER_OS" == "Linux" ]; then
-    # Ibex IRQ test
-    build-ibex-interrupts
-fi
 
 ls -lh $ARTIFACTS_DIR
