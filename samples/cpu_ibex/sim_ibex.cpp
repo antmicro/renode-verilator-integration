@@ -69,7 +69,6 @@ Ibex::Ibex()
     specialControlSignals.fetch_enable_i = &top.fetch_enable_i;
     specialControlSignals.core_sleep_o = &top.core_sleep_o;
     specialControlSignals.alert_minor_o = &top.alert_minor_o;
-    specialControlSignals.alert_major_o = &top.alert_major_o;
     specialControlSignals.init();
 
     interrupts.irq_nm_i = &top.irq_nm_i;
