@@ -1,0 +1,45 @@
+#!/bin/bash
+
+RENODE_PATH=${CI_PROJECT_DIR}/renode
+SAMPLES_PATH=${CI_PROJECT_DIR}/samples
+ARTIFACTS_PATH=${CI_PROJECT_DIR}/artifacts
+
+declare -a FAILED_BUILDS=()
+TESTS_FAILED=false
+set -x
+
+cd $SAMPLES_PATH
+for sample in *
+do
+    if [[ $sample =~ cfu ]]; then
+        echo "Skipping CFU samples for now"
+        continue
+    else
+        cd $SAMPLES_PATH
+        mkdir -p $sample/build
+        cd $SAMPLES_PATH/$sample/build
+        if [[ $sample == cpu_ibex ]]; then
+            echo "Skipping cpu_ibex for now"
+            continue
+            cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_PATH -DTOP_MODULE=ibex_top ..
+            cmake --build . --config Release -j
+        else
+            cmake -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR="$RENODE_PATH" -S ..
+            make -j
+        fi
+        if [ $? != 0 ]; then
+            echo "Failed to build $sample"
+            FAILED_BUILDS+=($sample)
+            continue
+        fi
+        cp libVtop.so ${ARTIFACTS_PATH}/${sample}.so
+        cp Vtop ${ARTIFACTS_PATH}/${sample}.socket
+    fi
+done
+
+cd $CI_PROJECT_DIR
+
+if [ ${#FAILED_BUILDS} != 0 ]; then
+   echo Some builds failed: ${FAILED_BUILDS[@]}
+   exit 1
+fi

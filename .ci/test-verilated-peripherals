@@ -1,0 +1,39 @@
+#!/bin/bash
+
+RENODE_PATH=${CI_PROJECT_DIR}/renode
+ARTIFACTS_PATH=${CI_PROJECT_DIR}/artifacts
+RENODE_TESTS_DIR=${RENODE_PATH}/tests/platforms/verilated
+
+VARIABLES=""
+echo -n > tests.yaml
+
+set -x
+
+for file in $ARTIFACTS_PATH/*.so
+do
+    FILE_NAME=$(basename $file)
+    SAMPLE_NAME=${FILE_NAME%%.*}
+    VARIABLES+=" --variable $(echo ${SAMPLE_NAME} | tr [:lower:] [:upper:])_NATIVE_LINUX:@$(realpath ${file})"
+done
+
+for file in $ARTIFACTS_PATH/*.socket
+do
+    FILE_NAME=$(basename $file)
+    SAMPLE_NAME=${FILE_NAME%%.*}
+    VARIABLES+=" --variable $(echo ${SAMPLE_NAME} | tr [:lower:] [:upper:])_SOCKET_LINUX:@$(realpath ${file})"
+done
+
+$RENODE_PATH/renode-test ${VARIABLES} -j16 --show-log ${RENODE_TESTS_DIR}/*.robot
+set +e
+if [ $? -ne 0 ]; then
+    TESTS_FAILED=true
+fi
+set -e
+rm tests.yaml
+echo "Grabbing test results"
+mkdir -p ${ARTIFACTS_PATH}/tests/
+cp -r ${RENODE_PATH}/output/tests/* ${ARTIFACTS_PATH}/tests/
+if [ ${TESTS_FAILED} ]; then
+    echo "Tests failed"
+    exit 1
+fi

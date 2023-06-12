@@ -1,0 +1,37 @@
+variables:
+    VERILATOR_PATH: /usr/bin/verilator
+
+.scalenode-settings: &scalenode_settings
+  SCALENODE_CPU: 16
+  SCALENODE_DISK: 40
+  SCALENODE_RAM: 8000
+
+build-and-test-samples:
+  image: "d2s://external/docker/debian:bullseye"
+  tags: ['ace-x86_64']
+
+  variables:
+    <<: *scalenode_settings
+
+  before_script:
+    - apt update
+    - apt install -y build-essential wget policykit-1 libgtk2.0-0 screen uml-utilities gtk-sharp2 libc6-dev gcc python3 python3-pip mono-complete cmake git g++ make verilator autoconf ccache flex bison perl xz-utils libfl2 libfl-dev zlib1g zlib1g-dev
+    - pip3 install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+    # Both should be changed to submodules IMHO
+    - git clone --recurse-submodules https://github.com/lowRISC/ibex.git samples/cpu_ibex/ibex
+    - git clone -b 45408-improve_CI --single-branch --recurse-submodules https://gitlab-ci-token:$CI_BUILD_TOKEN@dev.antmicro.com/git/renode.git
+    - cd renode
+    - ./build.sh
+    - pip install -r "$CI_PROJECT_DIR/renode/tests/requirements.txt"
+    - cd ..
+    - mkdir artifacts
+
+  script:
+    - source $CI_PROJECT_DIR/.ci/build-verilated-peripherals
+    - source $CI_PROJECT_DIR/.ci/test-verilated-peripherals
+
+  artifacts:
+    paths:
+      - ./artifacts/
+      - ./renode/output/tests/
+    when: always
