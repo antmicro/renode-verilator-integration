@@ -6,8 +6,13 @@
 .vscode
 obj_*
 logs
+artifacts/*
+tests.yaml
 
 cmake_install.cmake
 CMakeFiles
 CMakeCache.txt
 Makefile
+libffi7_3.3-4_amd64.deb
+*libVtop.so
+*Vtop
