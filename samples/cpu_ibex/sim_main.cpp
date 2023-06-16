@@ -41,8 +41,7 @@ RenodeAgent *Init()
 
     agent->addCPU(ibex);
 
-    instructionFetchBus->evaluateModel = evaluateModel;
-    loadStoreBus->evaluateModel = evaluateModel;
+    agent->evaluateModel = evaluateModel;
 
     return agent;
 }
