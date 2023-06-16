@@ -19,8 +19,7 @@ do
         mkdir -p $sample/build
         cd $SAMPLES_PATH/$sample/build
         if [[ $sample == cpu_ibex ]]; then
-            echo "Skipping cpu_ibex for now"
-            continue
+            fusesoc --cores-root=../ibex run --target=default --tool verilator --setup lowrisc:ibex:ibex_top
             cmake -G "Unix Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_PATH -DTOP_MODULE=ibex_top ..
             cmake --build . --config Release -j
         else
