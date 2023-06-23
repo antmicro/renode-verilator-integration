@@ -6,7 +6,6 @@
 .vscode
 obj_*
 logs
-artifacts/*
 tests.yaml
 
 cmake_install.cmake
