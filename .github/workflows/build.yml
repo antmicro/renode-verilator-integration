@@ -1,4 +1,4 @@
-name: build-verilated-peripherals
+name: test-verilated-peripherals
 
 on:
   pull_request:
@@ -81,3 +81,35 @@ jobs:
         with:
           name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
           path: artifacts/*
+
+  test:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { arch: "x86_64", os: "ubuntu-latest"  }
+          - { arch: "x86_64", os: "macos-latest"   }
+          - { arch: "x86_64", os: "windows-latest" }
+    defaults:
+      run:
+        shell: bash
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/download-artifact@v3
+        with:
+          name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
+          path: artifacts
+
+      - name: Test peripherals for ${{ runner.os }}
+        run: |
+          set -ex
+          tar -xf artifacts/renode.tar.gz
+          source .github/scripts/test.sh
+
+      - uses: actions/upload-artifact@v3
+        if: ${{ always() }}
+        with:
+          name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
+          path: renode/output/tests/*
