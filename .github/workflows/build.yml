@@ -1,4 +1,4 @@
-name: build-verilated-peripherals
+name: test-verilated-peripherals
 
 on:
   pull_request:
@@ -20,8 +20,8 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - { arch: "x86_64", os: "ubuntu-latest"  }
-          - { arch: "x86_64", os: "macos-latest"   }
+          - { arch: "x86_64", os: "ubuntu-20.04"   }
+          - { arch: "x86_64", os: "macos-13"       }
           - { arch: "x86_64", os: "windows-latest" }
     defaults:
       run:
@@ -90,3 +90,38 @@ jobs:
         with:
           name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
           path: artifacts/*
+
+  test:
+    needs: build
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - { arch: "x86_64", os: "ubuntu-20.04"   }
+          - { arch: "x86_64", os: "macos-13"       }
+          - { arch: "x86_64", os: "windows-latest" }
+    defaults:
+      run:
+        shell: bash
+    runs-on: ${{ matrix.config.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
+          path: artifacts
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.5' # newer version breaks pip on Windows
+
+      - name: Test peripherals for ${{ runner.os }}
+        run: |
+          set -ex
+          tar -xf artifacts/renode.tar.gz
+          source .github/scripts/test.sh
+
+      - uses: actions/upload-artifact@v4
+        if: ${{ always() }}
+        with:
+          name: test-output-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
+          path: renode/output/tests/*
