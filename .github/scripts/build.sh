@@ -101,13 +101,13 @@ function build-ibex-interrupts {
 }
 
 # Connection Timeout
-build-modified-uartlite sleep-after-1000-iters $RENODE_DIR
+build-modified-uartlite uartlite_sleep_after_1000_iters $RENODE_DIR
 
 # Full connection inability
-build-modified-uartlite wrong-ports $PWD
+build-modified-uartlite uartlite_wrong_ports $PWD
 
 # Partial connection inability
-build-modified-uartlite wrong-second-port $PWD
+build-modified-uartlite uartlite_wrong_second_port $PWD
 
 if [ "$RUNNER_OS" == "Linux" ]; then
     # Ibex IRQ test
