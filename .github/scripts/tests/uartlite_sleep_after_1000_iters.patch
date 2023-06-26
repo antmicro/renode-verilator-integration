@@ -1,0 +1,23 @@
+diff --git a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
+index 0ed0188..b8f9611 100644
+--- a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
++++ b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
+@@ -330,6 +330,7 @@ void RenodeAgent::handleInterrupts(void)
+     }
+ }
+ 
++#include <unistd.h>
+ void RenodeAgent::simulate(int receiverPort, int senderPort, const char *address)
+ {
+     renodeAgent = this;
+@@ -339,7 +340,10 @@ void RenodeAgent::simulate(int receiverPort, int senderPort, const char *address
+     Protocol *result;
+     reset();
+ 
++    int iter = 0;
+     while(channel->getIsConnected()) {
++        if(++iter > 1000) sleep(600);
++
+         result = receive();
+         handleRequest(result);
+         delete result;
