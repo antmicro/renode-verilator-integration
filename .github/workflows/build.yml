@@ -46,6 +46,14 @@ jobs:
             mingw-w64-x86_64-make
             patch
 
+      - name: Download and build Renode
+        run: |
+          set -ex
+          RUNNER_OS=${{ runner.os }}
+          source .github/scripts/build-renode.sh
+          mkdir -p artifacts
+          tar -czf artifacts/renode.tar.gz renode/
+
       - name: Build peripherals for Windows
         if: ${{ runner.os == 'Windows' }}
         shell: msys2 {0}
