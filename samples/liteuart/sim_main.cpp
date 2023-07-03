@@ -50,6 +50,7 @@ RenodeAgent *Init() {
     bus->wb_stb = &top->wb_stb;
     bus->wb_ack = &top->wb_ack;
     bus->wb_cyc = &top->wb_cyc;
+    bus->addr_lines = 30;
 
     //=================================================
     // Init eval function
