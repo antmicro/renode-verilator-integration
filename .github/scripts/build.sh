@@ -56,7 +56,7 @@ function build {
 
     cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_DIR $EXTRA_CMAKE_VARS ..
 
-    $MAKE_BIN Vtop libVtop VERBOSE=1
+    $MAKE_BIN -j Vtop libVtop VERBOSE=1
     cp "Vtop$BIN_SUFFIX" "$SAMPLES_DIR/V${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$BIN_SUFFIX"
 
     # Check dependencies on Linux and Windows
