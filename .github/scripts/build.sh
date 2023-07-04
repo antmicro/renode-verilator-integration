@@ -34,8 +34,8 @@ elif [ "$RUNNER_OS" = "macOS" ]; then
     export PATH="$PATH":$(python3 -c 'import os, inspect; print(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(inspect.getfile(os)))), "bin"))')
 fi
 
-ARTIFACTS_DIR="$PWD/artifacts"
-mkdir -p $ARTIFACTS_DIR
+SAMPLES_DIR="$PWD/artifacts/samples"
+mkdir -p $SAMPLES_DIR
 
 RENODE_DIR="$PWD/renode"
 
@@ -57,14 +57,14 @@ function build {
     cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_DIR $EXTRA_CMAKE_VARS ..
 
     $MAKE_BIN Vtop libVtop VERBOSE=1
-    cp "Vtop$BIN_SUFFIX" "$ARTIFACTS_DIR/V${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$BIN_SUFFIX"
+    cp "Vtop$BIN_SUFFIX" "$SAMPLES_DIR/V${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$BIN_SUFFIX"
 
     # Check dependencies on Linux and Windows
     if [ "$RUNNER_OS" != "macOS" ]; then
         ldd "Vtop$BIN_SUFFIX"
     fi
 
-    cp "libVtop$LIB_SUFFIX" "$ARTIFACTS_DIR/libV${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$LIB_SUFFIX"
+    cp "libVtop$LIB_SUFFIX" "$SAMPLES_DIR/libV${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$LIB_SUFFIX"
     popd
     rm -rf "$1/build"
 }
@@ -96,7 +96,7 @@ function build-modified-uartlite {
 function build-ibex-interrupts {
     pushd samples/cpu_ibex/irq_example/
     ./build.sh
-    cp main.elf main.dump $ARTIFACTS_DIR
+    cp main.elf main.dump $SAMPLES_DIR
     popd
 }
 
@@ -114,4 +114,4 @@ if [ "$RUNNER_OS" == "Linux" ]; then
     build-ibex-interrupts
 fi
 
-ls -lh $ARTIFACTS_DIR
+ls -lh $SAMPLES_DIR
