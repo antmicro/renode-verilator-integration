@@ -51,9 +51,21 @@ fi
 if [ "$RUNNER_OS" = "Windows" ]; then
     py -3 -m pip install -r $RENODE_PATH/tests/requirements.txt
     chmod u+x $RENODE_PATH/renode-test
-    $RENODE_PATH/renode-test --runner dotnet ${VARIABLES} ${RENODE_TESTS_DIR}/*.robot
+    # $RENODE_PATH/renode-test --runner dotnet ${VARIABLES} ${RENODE_TESTS_DIR}/*.robot
+    while [[ "$?" == 0 ]]; do
+        $RENODE_PATH/renode-test --runner dotnet --fixture "Should Enter Single Step Blocking" \
+            --verbose \
+            --show-log \
+            $RENODE_PATH/tests/platforms/verilated/verilated_ibex_pause_resume.robot
+    done
 else
     python3 -m pip install -r $RENODE_PATH/tests/requirements.txt
     chmod u+x $RENODE_PATH/renode-test
-    $RENODE_PATH/renode-test -j16 ${VARIABLES} ${RENODE_TESTS_DIR}/*.robot
+    # $RENODE_PATH/renode-test -j16 ${VARIABLES} ${RENODE_TESTS_DIR}/*.robot
+    while [[ "$?" == 0 ]]; do
+        $RENODE_PATH/renode-test --fixture "Should Enter Single Step Blocking" \
+            --verbose \
+            --show-log \
+            $RENODE_PATH/tests/platforms/verilated/verilated_ibex_pause_resume.robot
+    done
 fi
