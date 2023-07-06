@@ -12,7 +12,8 @@ if [ "$RUNNER_OS" = "Windows" ]; then
 
     # install dependencies for cpu_ibex sample
     pacman --noconfirm -S --needed wget python-pip perl xz zlib
-    pip install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+    py -3 -m pip install --upgrade pip
+    py -3 -m pip install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
 
 elif [ "$RUNNER_OS" = "Linux" ]; then
     LIB_SUFFIX=".so"
