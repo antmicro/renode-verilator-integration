@@ -28,8 +28,8 @@ RenodeAgent *Init()
 {
     Verilated::commandArgs(0, (const char **)nullptr);
 
-    WishboneInitiator<uint32_t, uint32_t> *instructionFetchBus = new WishboneInitiator<uint32_t, uint32_t>();
-    WishboneInitiator<uint32_t, uint32_t> *loadStoreBus = new WishboneInitiator<uint32_t, uint32_t>();
+    WishboneInitiator<uint32_t, uint32_t> *instructionFetchBus = new WishboneInitiator<uint32_t, uint32_t>(32, 32);
+    WishboneInitiator<uint32_t, uint32_t> *loadStoreBus = new WishboneInitiator<uint32_t, uint32_t>(32, 32);
 
     agent = new CpuAgent(instructionFetchBus);
     agent->addBus(loadStoreBus);
