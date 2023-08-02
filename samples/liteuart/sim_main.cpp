@@ -35,7 +35,7 @@ void eval() {
 }
 
 RenodeAgent *Init() {
-    Wishbone* bus = new Wishbone();
+    Wishbone* bus = new Wishbone(32, 17);
 
     //=================================================
     // Init bus signals

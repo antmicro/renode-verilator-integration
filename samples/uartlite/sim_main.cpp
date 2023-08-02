@@ -33,7 +33,7 @@ void eval() {
 }
 
 RenodeAgent *Init() {
-    AxiLite* bus = new AxiLite();
+    AxiLite* bus = new AxiLite(32, 32);
 
     //=================================================
     // Init bus signals

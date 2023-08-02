@@ -37,8 +37,8 @@ void eval() {
 
 RenodeAgent *Init() {
     AxiSlave* reader = new AxiSlave(32, 32);
-    AxiLite* bus = new AxiLite();
-    AxiLiteInitiator* writer = new AxiLiteInitiator();
+    AxiLite* bus = new AxiLite(32, 32);
+    AxiLiteInitiator* writer = new AxiLiteInitiator(32, 32);
 
     //=================================================
     // Init bus signals

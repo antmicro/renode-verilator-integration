@@ -35,7 +35,7 @@ void eval() {
 }
 
 RenodeAgent *Init() {
-    APB3* bus = new APB3();
+    APB3* bus = new APB3(32, 5);
 
     //=================================================
     // Init bus signals
