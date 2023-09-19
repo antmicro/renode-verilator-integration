@@ -11,8 +11,9 @@ if [ "$RUNNER_OS" = "Windows" ]; then
     MAKE_TYPE="MinGW"
 
     # install dependencies for cpu_ibex sample
-    pacman --noconfirm -S --needed wget python-pip perl xz zlib
-    pip install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+    pacman --noconfirm -S --needed wget perl xz zlib
+    py -3 -m pip install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+    PATH="$PATH:/c/hostedtoolcache/windows/Python/3.11.5/x64/Scripts"
 
 elif [ "$RUNNER_OS" = "Linux" ]; then
     LIB_SUFFIX=".so"
