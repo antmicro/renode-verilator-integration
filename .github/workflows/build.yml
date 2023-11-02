@@ -46,6 +46,10 @@ jobs:
             mingw-w64-x86_64-make
             patch
 
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11.5' # newer version breaks pip on Windows
+
       - name: Download and build Renode
         run: |
           set -ex
@@ -63,6 +67,11 @@ jobs:
           MAKE_BIN="mingw32-make.exe"
           BUILD_ARCH=${{ matrix.config.arch }}
           git submodule update --init --recursive
+
+          # setup-python doesn't set path when using MSYS2 on Windows
+          export PATH="$PATH:/c/hostedtoolcache/windows/Python/3.11.5/x64"
+          export PATH="$PATH:/c/hostedtoolcache/windows/Python/3.11.5/x64/Scripts"
+
           source .github/scripts/build-verilator.sh
           source .github/scripts/build.sh
 

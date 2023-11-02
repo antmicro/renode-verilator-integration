@@ -5,33 +5,27 @@ if [ -z "$RUNNER_OS" -o -z "$MAKE_BIN" -o -z "$BUILD_ARCH" ]; then
     exit -1
 fi
 
+# install dependencies for cpu_ibex sample
+pip install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+
 if [ "$RUNNER_OS" = "Windows" ]; then
     BIN_SUFFIX=".exe"
     LIB_SUFFIX=".dll"
     MAKE_TYPE="MinGW"
 
     # install dependencies for cpu_ibex sample
-    pacman --noconfirm -S --needed wget python-pip perl xz zlib
-    pip install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
-
+    pacman --noconfirm -S --needed wget perl xz zlib
 elif [ "$RUNNER_OS" = "Linux" ]; then
     LIB_SUFFIX=".so"
     EXTRA_CMAKE_VARS="-DLIBOPENLIBM=$GITHUB_WORKSPACE/lib/libopenlibm-Linux-x86_64.a"
 
     # install dependencies for cpu_ibex sample
-    sudo apt install git build-essential python3-pip wget cmake autoconf ccache flex bison perl xz-utils libfl2 libfl-dev zlib1g zlib1g-dev
-    sudo pip3 install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
+    sudo apt install git build-essential wget cmake autoconf ccache flex bison perl xz-utils libfl2 libfl-dev zlib1g zlib1g-dev
     wget http://azure.archive.ubuntu.com/ubuntu/pool/main/libf/libffi/libffi7_3.3-4_amd64.deb
     sudo dpkg -i libffi7_3.3-4_amd64.deb
     
 elif [ "$RUNNER_OS" = "macOS" ]; then
     LIB_SUFFIX=".dylib"
-
-    # install dependencies for cpu_ibex sample
-    pip3 install --upgrade pyyaml mako junit-xml git+https://github.com/lowRISC/edalize.git@ot git+https://github.com/lowRISC/fusesoc.git@ot
-
-    # include Python Framework bin folder where fusesoc is installed
-    export PATH="$PATH":$(python3 -c 'import os, inspect; print(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(inspect.getfile(os)))), "bin"))')
 fi
 
 SAMPLES_DIR="$PWD/artifacts/samples"

@@ -11,7 +11,8 @@ git clone -b "v$VERILATOR_VERSION" https://github.com/verilator/verilator
 pushd verilator
 
 if [ "$RUNNER_OS" = "Windows" ]; then  # MSYS2
-    pacman --noconfirm -S --needed autoconf bison flex python3 mingw-w64-x86_64-ccache
+    pacman --noconfirm -S --needed autoconf bison flex mingw-w64-x86_64-ccache
+
     # `CPPFLAGS=-I/usr/include` doesn't work
     cp /usr/include/FlexLexer.h include/
 fi
