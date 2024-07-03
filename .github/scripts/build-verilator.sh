@@ -23,7 +23,7 @@ if [ "$RUNNER_OS" = "Linux" ]; then  # Ubuntu
 fi
 
 if [ "$RUNNER_OS" = "macOS" ]; then
-    brew install ccache
+    brew install automake ccache
 fi
 
 autoconf
