@@ -80,7 +80,12 @@ jobs:
       - uses: actions/upload-artifact@v4
         with:
           name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
-          path: artifacts/*
+          path: artifacts/samples/*
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: renode-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
+          path: artifacts/renode.tar.gz
 
   test:
     needs: build
@@ -97,6 +102,10 @@ jobs:
     runs-on: ${{ matrix.config.os }}
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: renode-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
+          path: artifacts
       - uses: actions/download-artifact@v4
         with:
           name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
