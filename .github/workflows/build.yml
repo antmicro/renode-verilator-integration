@@ -58,30 +58,21 @@ jobs:
           mkdir -p artifacts
           tar -c --dereference -zf artifacts/renode.tar.gz renode/
 
-      - name: Build peripherals for Windows
-        if: ${{ runner.os == 'Windows' }}
-        shell: msys2 {0}
-        run: |
-          set -ex
-          RUNNER_OS="Windows"
-          MAKE_BIN="mingw32-make.exe"
-          BUILD_ARCH=${{ matrix.config.arch }}
-          git submodule update --init --recursive
-
-          # setup-python doesn't set path when using MSYS2 on Windows
-          export PATH="$PATH:/c/hostedtoolcache/windows/Python/3.11.5/x64"
-          export PATH="$PATH:/c/hostedtoolcache/windows/Python/3.11.5/x64/Scripts"
-
-          source .github/scripts/build-verilator.sh
-          source .github/scripts/build.sh
-
       - name: Build peripherals for ${{ runner.os }}
-        if: ${{ runner.os != 'Windows' }}
         run: |
           set -ex
           RUNNER_OS=${{ runner.os }}
           MAKE_BIN="make"
           BUILD_ARCH=${{ matrix.config.arch }}
+          if [ "$RUNNER_OS" = "Windows" ]; then
+            if [ -z "$REEXECED_UNDER_MSYS" ]; then
+              REEXECED_UNDER_MSYS=1 exec cmd //c "$RUNNER_TEMP/setup-msys2/msys2 $0"
+            fi
+            MAKE_BIN="mingw32-make.exe"
+            # setup-python doesn't set path when using MSYS2 on Windows
+            export PATH="$PATH:/c/hostedtoolcache/windows/Python/3.11.5/x64"
+            export PATH="$PATH:/c/hostedtoolcache/windows/Python/3.11.5/x64/Scripts"
+          fi
           git submodule update --init --recursive
           source .github/scripts/build-verilator.sh
           source .github/scripts/build.sh
