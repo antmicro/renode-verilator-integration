@@ -109,7 +109,7 @@ jobs:
       - uses: actions/download-artifact@v4
         with:
           name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
-          path: artifacts
+          path: artifacts/samples
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11.5' # newer version breaks pip on Windows
