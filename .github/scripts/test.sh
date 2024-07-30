@@ -1,5 +1,7 @@
 #!/bin/bash
 
+shopt -s failglob
+
 SAMPLES_PATH=$PWD/artifacts/samples
 RENODE_PATH=$PWD/renode
 RENODE_TESTS_DIR=$RENODE_PATH/tests/platforms/verilated
