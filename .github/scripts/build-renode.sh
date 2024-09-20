@@ -8,7 +8,7 @@ git clone --single-branch --recurse-submodules -b "${RENODE_GITREV:-master}" htt
 
 if [ "$RUNNER_OS" = "Linux" ]; then
     sudo apt-get update
-    sudo apt-get install -y policykit-1 libgtk2.0-0 screen uml-utilities gtk-sharp2 libc6-dev gcc mono-complete
+    sudo apt-get install -y cmake policykit-1 libgtk2.0-0 screen uml-utilities gtk-sharp2 libc6-dev gcc mono-complete
 fi
 
 pushd renode
