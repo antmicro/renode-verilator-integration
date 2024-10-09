@@ -31,8 +31,6 @@ fi
 SAMPLES_DIR="$PWD/artifacts/samples"
 mkdir -p $SAMPLES_DIR
 
-RENODE_DIR="$PWD/renode"
-
 # Usage: build SOURCE_DIR [OUT_NAME]
 function build {
     pushd $1
@@ -48,7 +46,7 @@ function build {
         fusesoc --cores-root=../ibex run --target=default --tool verilator --setup lowrisc:ibex:$TOP_MODULE
     fi
 
-    cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release -DUSER_RENODE_DIR=$RENODE_DIR $EXTRA_CMAKE_VARS ..
+    cmake -G "${MAKE_TYPE:-Unix} Makefiles" -DCMAKE_BUILD_TYPE=Release $EXTRA_CMAKE_VARS ..
 
     $MAKE_BIN Vtop libVtop VERBOSE=1
     cp "Vtop$BIN_SUFFIX" "$SAMPLES_DIR/V${2:-$1}-$RUNNER_OS-$BUILD_ARCH-$GITHUB_RUN_ID$BIN_SUFFIX"
@@ -95,7 +93,7 @@ function build-ibex-interrupts {
 }
 
 # Connection Timeout
-build-modified-uartlite uartlite_sleep_after_1000_iters $RENODE_DIR
+build-modified-uartlite uartlite_sleep_after_1000_iters $RENODE_ROOT
 
 # Full connection inability
 build-modified-uartlite uartlite_wrong_ports $PWD

@@ -9,9 +9,12 @@ on:
         description: 'Renode git revision'
         required: false
         default: ''
+      renode_gitrepo:
+        description: 'Renode git repository'
+        required: false
+        default: ''
 
 env:
-  RENODE_GITREV: "${{ github.event.inputs.renode_gitrev }}"
   VERILATOR_VERSION: "4.200"
 
 jobs:
@@ -50,13 +53,11 @@ jobs:
         with:
           python-version: '3.11.5' # newer version breaks pip on Windows
 
-      - name: Download and build Renode
-        run: |
-          set -ex
-          RUNNER_OS=${{ runner.os }}
-          source .github/scripts/build-renode.sh
-          mkdir -p artifacts
-          tar -c --dereference -zf artifacts/renode.tar.gz renode/
+      - name: Build Renode
+        uses: antmicro/renode-test-action@v4
+        with:
+          renode-repository: ${{ inputs.renode_gitrepo || 'https://github.com/renode/renode' }}
+          renode-revision: ${{ inputs.renode_gitrev || 'master' }}
 
       - name: Build peripherals for ${{ runner.os }}
         run: |
@@ -82,11 +83,6 @@ jobs:
           name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
           path: artifacts/samples/*
 
-      - uses: actions/upload-artifact@v4
-        with:
-          name: renode-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
-          path: artifacts/renode.tar.gz
-
   test:
     needs: build
     strategy:
@@ -104,24 +100,23 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: renode-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
-          path: artifacts
-      - uses: actions/download-artifact@v4
-        with:
           name: renode-verilator-integration-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
           path: artifacts/samples
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11.5' # newer version breaks pip on Windows
 
+      - name: Build Renode
+        uses: antmicro/renode-test-action@v4
+        with:
+          renode-repository: ${{ inputs.renode_gitrepo || 'https://github.com/renode/renode' }}
+          renode-revision: ${{ inputs.renode_gitrev || 'master' }}
+
       - name: Test peripherals for ${{ runner.os }}
-        run: |
-          set -ex
-          tar -xf artifacts/renode.tar.gz
-          source .github/scripts/test.sh
+        run: .github/scripts/test.sh
 
       - uses: actions/upload-artifact@v4
         if: ${{ always() }}
         with:
           name: test-output-${{ runner.os }}-${{ matrix.config.arch }}-${{ github.run_id }}
-          path: renode/output/tests/*
+          path: results

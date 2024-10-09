@@ -3,10 +3,14 @@
 shopt -s failglob
 
 SAMPLES_PATH=$PWD/artifacts/samples
-RENODE_PATH=$PWD/renode
-RENODE_TESTS_DIR=$RENODE_PATH/tests/platforms/verilated
+RENODE_TESTS_DIR=$RENODE_ROOT/tests/platforms/verilated
 
 VARIABLES=""
+
+if [ "$RUNNER_OS" = "Windows" ]; then
+    # Ensure RENODE_TESTS_DIR is a Unix-style path so we can glob on it in the renode-test invocation
+    RENODE_TESTS_DIR="$(cygpath "$RENODE_TESTS_DIR")"
+fi
 
 function file_name_to_peripheral {
     basename "$1" | sed 's/^V//;s/^LIBV//;s/-.*//'
@@ -43,17 +47,4 @@ do
     VARIABLES+=" --variable $(variable_name ${file} "SOCKET"):@${path}"
 done
 
-if [ "$RUNNER_OS" = "Linux" ]; then
-    sudo apt-get update
-    sudo apt-get install -y policykit-1 libgtk2.0-0 screen uml-utilities gtk-sharp2 libc6-dev gcc mono-complete
-fi
-
-pip install -r $RENODE_PATH/tests/requirements.txt
-
-if [ "$RUNNER_OS" = "Windows" ]; then
-    # use python instead of default py -3
-    sed -i 's/py -3/python/g' $RENODE_PATH/tools/common.sh
-    $RENODE_PATH/renode-test --net ${VARIABLES} ${RENODE_TESTS_DIR}/*.robot
-else
-    $RENODE_PATH/renode-test ${VARIABLES} ${RENODE_TESTS_DIR}/*.robot
-fi
+renode-test ${VARIABLES} --results-dir results ${RENODE_TESTS_DIR}/*.robot
