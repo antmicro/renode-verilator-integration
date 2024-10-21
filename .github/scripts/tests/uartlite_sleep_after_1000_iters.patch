@@ -1,7 +1,7 @@
-diff --git a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
-index c61ce623b..2dfc402f2 100644
---- a/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
-+++ b/src/Plugins/VerilatorPlugin/VerilatorIntegrationLibrary/src/renode_bus.cpp
+diff --git a/src/Plugins/CoSimulationPlugin/IntegrationLibrary/src/renode_bus.cpp b/src/Plugins/CoSimulationPlugin/IntegrationLibrary/src/renode_bus.cpp
+index 2e425a734..5519bbce7 100644
+--- a/src/Plugins/CoSimulationPlugin/IntegrationLibrary/src/renode_bus.cpp
++++ b/src/Plugins/CoSimulationPlugin/IntegrationLibrary/src/renode_bus.cpp
 @@ -179,6 +179,7 @@ void RenodeAgent::handleInterrupts(void)
      }
  }

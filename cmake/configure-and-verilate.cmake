@@ -4,23 +4,23 @@ if(POLICY CMP0074)
   cmake_policy(SET CMP0074 NEW)
 endif()
 
-# Set acceptable Renode VerilatorIntegrationLibrary version range
-if(NOT REQUIRED_VIL_VERSION)
-  # REQUIRED_VIL_VERSION can be adjusted in CMakeLists.txt
-  set(REQUIRED_VIL_VERSION 2.0)
+# Set acceptable Renode IntegrationLibrary version range
+if(NOT REQUIRED_COSIM_VERSION)
+  # REQUIRED_COSIM_VERSION can be adjusted in CMakeLists.txt
+  set(REQUIRED_COSIM_VERSION 3.0)
 endif()
-set(MAX_VIL_VERSION 3.0)
+set(MAX_COSIM_VERSION 4.0)
 
 # Hide not so usable variables from basic views of ccmake and cmake-gui
 mark_as_advanced(CMAKE_INSTALL_PREFIX verilator_DIR VERILATOR_ROOT VERILATOR_BIN PERL)
 
-# Finding Verilator and Renode's 'VerilatorIntegrationLibrary'
+# Finding Verilator and Renode's 'IntegrationLibrary'
 
 if(NOT USER_RENODE_DIR AND DEFINED ENV{RENODE_ROOT})
   message(STATUS "Using RENODE_ROOT from environment as USER_RENODE_DIR")
-  set(USER_RENODE_DIR $ENV{RENODE_ROOT} CACHE PATH "Absolute (!) path to Renode root directory or any other that contains VerilatorIntegrationLibrary.")
+  set(USER_RENODE_DIR $ENV{RENODE_ROOT} CACHE PATH "Absolute (!) path to Renode root directory or any other that contains IntegrationLibrary.")
 else()
-  set(USER_RENODE_DIR CACHE PATH "Absolute (!) path to Renode root directory or any other that contains VerilatorIntegrationLibrary.")
+  set(USER_RENODE_DIR CACHE PATH "Absolute (!) path to Renode root directory or any other that contains IntegrationLibrary.")
 endif()
 
 if(CMAKE_HOST_WIN32)
@@ -51,51 +51,51 @@ if(CMAKE_HOST_WIN32)
   _try_repair_path(VERILATOR_ROOT TRUE)
 endif()
 
-if(NOT VIL_DIR)
+if(NOT COSIM_DIR)
   if(NOT USER_RENODE_DIR OR NOT IS_ABSOLUTE "${USER_RENODE_DIR}")
-    message(FATAL_ERROR "Please set the CMake's USER_RENODE_DIR variable to an absolute (!) path to Renode root directory or any other that contains VerilatorIntegrationLibrary.\nPass the '-DUSER_RENODE_DIR=<ABSOLUTE_PATH>' switch if you configure with the 'cmake' command. Optionally, consider using 'ccmake' or 'cmake-gui' which make it easier.")
+    message(FATAL_ERROR "Please set the CMake's USER_RENODE_DIR variable to an absolute (!) path to Renode root directory or any other that contains IntegrationLibrary.\nPass the '-DUSER_RENODE_DIR=<ABSOLUTE_PATH>' switch if you configure with the 'cmake' command. Optionally, consider using 'ccmake' or 'cmake-gui' which make it easier.")
   endif()
   
-  message(STATUS "Looking for Renode VerilatorIntegrationLibrary inside ${USER_RENODE_DIR}...")
-  set(VIL_FILE verilator-integration-library.cmake)
-  # Look for the ${VIL_FILE} in the whole ${USER_RENODE_DIR} tree
+  message(STATUS "Looking for Renode IntegrationLibrary inside ${USER_RENODE_DIR}...")
+  set(COSIM_FILE integration-library.cmake)
+  # Look for the ${COSIM_FILE} in the whole ${USER_RENODE_DIR} tree
   #   (don't use `/*/` as then an additional directory is required between the two)
-  file(GLOB_RECURSE VIL_FOUND ${USER_RENODE_DIR}*/${VIL_FILE})
+  file(GLOB_RECURSE COSIM_FOUND ${USER_RENODE_DIR}*/${COSIM_FILE})
   
-  list(LENGTH VIL_FOUND VIL_FOUND_N)
-  if(${VIL_FOUND_N} EQUAL 1)
-    string(REPLACE "/${VIL_FILE}" "" VIL_DIR ${VIL_FOUND})
-  elseif(${VIL_FOUND_N} GREATER 1)
-    string(REGEX REPLACE "/${VIL_FILE}" " " ALL_FOUND ${VIL_FOUND})
-    message(FATAL_ERROR "Found more than one directory with VerilatorIntegrationLibrary inside USER_RENODE_DIR. Please choose one of them: ${ALL_FOUND}")
+  list(LENGTH COSIM_FOUND COSIM_FOUND_N)
+  if(${COSIM_FOUND_N} EQUAL 1)
+    string(REPLACE "/${COSIM_FILE}" "" COSIM_DIR ${COSIM_FOUND})
+  elseif(${COSIM_FOUND_N} GREATER 1)
+    string(REGEX REPLACE "/${COSIM_FILE}" " " ALL_FOUND ${COSIM_FOUND})
+    message(FATAL_ERROR "Found more than one directory with IntegrationLibrary inside USER_RENODE_DIR. Please choose one of them: ${ALL_FOUND}")
   endif()
   
-  if(NOT VIL_DIR OR NOT EXISTS "${VIL_DIR}/${VIL_FILE}")
-    message(FATAL_ERROR "Couldn't find valid VerilatorIntegrationLibrary inside USER_RENODE_DIR!")
+  if(NOT COSIM_DIR OR NOT EXISTS "${COSIM_DIR}/${COSIM_FILE}")
+    message(FATAL_ERROR "Couldn't find valid IntegrationLibrary inside USER_RENODE_DIR!")
   endif()
   
-  include(${VIL_DIR}/${VIL_FILE})  # sets VIL_VERSION variable
-  message(STATUS "Renode VerilatorIntegrationLibrary (version ${VIL_VERSION}) found in ${VIL_DIR}.")
+  include(${COSIM_DIR}/${COSIM_FILE})  # sets COSIM_VERSION variable
+  message(STATUS "Renode IntegrationLibrary (version ${COSIM_VERSION}) found in ${COSIM_DIR}.")
   
-  # Check if VIL_VERSION is acceptable
-  if(NOT IGNORE_VIL_VERSION)
-    if(VIL_VERSION VERSION_LESS REQUIRED_VIL_VERSION OR VIL_VERSION VERSION_GREATER_EQUAL MAX_VIL_VERSION)
-      set(IGNORE_VIL_VERSION CACHE BOOL "Ignore VerilatorIntegrationLibrary version mismatch")
-      message(FATAL_ERROR "VerilatorIntegrationLibrary's version (found: ${VIL_VERSION}) should be: >=${REQUIRED_VIL_VERSION} AND <${MAX_VIL_VERSION}!\nThis check can be skipped with '-DIGNORE_VIL_VERSION=ON'.")
+  # Check if COSIM_VERSION is acceptable
+  if(NOT IGNORE_COSIM_VERSION)
+    if(COSIM_VERSION VERSION_LESS REQUIRED_COSIM_VERSION OR COSIM_VERSION VERSION_GREATER_EQUAL MAX_COSIM_VERSION)
+      set(IGNORE_COSIM_VERSION CACHE BOOL "Ignore IntegrationLibrary version mismatch")
+      message(FATAL_ERROR "IntegrationLibrary's version (found: ${COSIM_VERSION}) should be: >=${REQUIRED_COSIM_VERSION} AND <${MAX_COSIM_VERSION}!\nThis check can be skipped with '-DIGNORE_COSIM_VERSION=ON'.")
     endif()
   endif()
 
-  # Save VIL_DIR in cache
-  set(VIL_DIR ${VIL_DIR} CACHE INTERNAL "")
+  # Save COSIM_DIR in cache
+  set(COSIM_DIR ${COSIM_DIR} CACHE INTERNAL "")
 endif()
 
 
 if(NOT ${CMAKE_PROJECT_NAME} MATCHES "cfu_")
-  file(GLOB_RECURSE RENODE_SOURCES ${VIL_DIR}/*.cpp)
-  list(REMOVE_ITEM RENODE_SOURCES ${VIL_DIR}/src/buses/cfu.cpp)
-  list(REMOVE_ITEM RENODE_SOURCES ${VIL_DIR}/src/renode_cfu.cpp)
+  file(GLOB_RECURSE RENODE_SOURCES ${COSIM_DIR}/*.cpp)
+  list(REMOVE_ITEM RENODE_SOURCES ${COSIM_DIR}/src/buses/cfu.cpp)
+  list(REMOVE_ITEM RENODE_SOURCES ${COSIM_DIR}/src/renode_cfu.cpp)
 else()
-  file(GLOB_RECURSE RENODE_SOURCES ${VIL_DIR}/cfu.cpp ${VIL_DIR}/renode_cfu.cpp)
+  file(GLOB_RECURSE RENODE_SOURCES ${COSIM_DIR}/cfu.cpp ${COSIM_DIR}/renode_cfu.cpp)
 endif()
 
 if(IS_DIRECTORY "${USER_VERILATOR_DIR}" AND DEFINED ENV{VERILATOR_ROOT})
@@ -156,8 +156,8 @@ endif()
 
 add_executable(Vtop ${CSOURCES} ${RENODE_SOURCES})
 add_library(libVtop SHARED ${CSOURCES} ${RENODE_SOURCES})
-target_include_directories(Vtop PRIVATE ${VIL_DIR})
-target_include_directories(libVtop PRIVATE ${VIL_DIR})
+target_include_directories(Vtop PRIVATE ${COSIM_DIR})
+target_include_directories(libVtop PRIVATE ${COSIM_DIR})
 
 target_compile_options(Vtop PRIVATE ${FINAL_EXEC_COMP_ARGS})
 target_compile_options(libVtop PRIVATE ${FINAL_LIB_COMP_ARGS})
