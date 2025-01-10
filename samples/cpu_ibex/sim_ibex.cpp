@@ -7,9 +7,9 @@ void IbexBusInterface::connect(WishboneInitiator<uint32_t, uint32_t> &wishbone)
     wishbone.wb_ack = &rvalid_i();
     wishbone.wb_rd_dat = &rdata_i();
     wishbone.wb_stb = &req_o();
-    wishbone.wb_addr = &addr_o();
     wishbone.wb_wr_dat = &wdata_o();
     wishbone.wb_we = &we_o();
+    wishbone.wb_addr = &wb_addr;
     wishbone.wb_cyc = &wb_cyc;
     wishbone.wb_sel = &wb_sel;
     wishbone.wb_rst = &wb_rst;
@@ -20,6 +20,7 @@ void IbexBusInterface::convert(uint8_t clk)
 {
     gnt_i() = req_o() & ~wb_stall;
     wb_sel = be_o();
+    wb_addr = addr_o() / sizeof(uint32_t);
 
     if (wb_rst)
         wb_cyc = low;

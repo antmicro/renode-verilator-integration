@@ -30,6 +30,7 @@ struct IbexBusInterface
     void connect(WishboneInitiator<uint32_t, uint32_t> &wishbone);
     void convert(uint8_t clk);
 
+    uint32_t wb_addr;
     uint8_t wb_cyc = 0, wb_sel, wb_rst = high, wb_stall = high;
 };
 
