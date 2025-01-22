@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2021 Antmicro
+// Copyright (c) 2010-2025 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -32,7 +32,8 @@ void eval() {
     top->eval();
 }
 
-RenodeAgent *Init() {
+RenodeAgent *initAgent() {
+    RenodeAgent *agent = new UART(&top->txd, &top->rxd, prescaler);
     AxiLite* bus = new AxiLite();
 
     //=================================================
@@ -66,7 +67,14 @@ RenodeAgent *Init() {
     //=================================================
     // Init peripheral
     //=================================================
-    return new UART(bus, &top->txd, &top->rxd, prescaler);
+    agent->addBus(bus);
+    return agent;
+}
+
+RenodeAgent *Init() {
+    RenodeAgent *agent = initAgent();
+    agent->connectNative();
+    return agent;
 }
 
 int main(int argc, char **argv, char **env) {
@@ -83,8 +91,9 @@ int main(int argc, char **argv, char **env) {
     top->trace(tfp, 99);
     tfp->open("simx.vcd");
 #endif
-    RenodeAgent *uart = Init();
-    uart->simulate(atoi(argv[1]), atoi(argv[2]), address);
+    RenodeAgent *uart = initAgent();
+    uart->connect(atoi(argv[1]), atoi(argv[2]), address);
+    uart->simulate();
     top->final();
     exit(0);
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2021 Antmicro
+// Copyright (c) 2010-2025 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -34,7 +34,7 @@ void eval() {
 
 struct UARTWithLogger: UART
 {
-    UARTWithLogger(BaseTargetBus* bus, uint8_t* txd, uint8_t* rxd, uint32_t prescaler, uint32_t tx_reg_addr=4, uint8_t* irq=nullptr);
+    UARTWithLogger(uint8_t* txd, uint8_t* rxd, uint32_t prescaler, uint32_t tx_reg_addr=4, uint8_t* irq=nullptr);
 
     protected:
         void writeToBus(int width, uint64_t addr, uint64_t value) override;
@@ -42,8 +42,8 @@ struct UARTWithLogger: UART
         void Txd();
 };
 
-UARTWithLogger::UARTWithLogger(BaseTargetBus* bus, uint8_t* txd, uint8_t* rxd, uint32_t prescaler, uint32_t tx_reg_addr, uint8_t* irq)
-                        : UART(bus, txd, rxd, prescaler, tx_reg_addr, irq) {}
+UARTWithLogger::UARTWithLogger(uint8_t* txd, uint8_t* rxd, uint32_t prescaler, uint32_t tx_reg_addr, uint8_t* irq)
+                        : UART(txd, rxd, prescaler, tx_reg_addr, irq) {}
 
 void UARTWithLogger::writeToBus(int width, uint64_t addr, uint64_t value) {
     UART::writeToBus(width, addr, value);
@@ -62,7 +62,11 @@ void UARTWithLogger::Txd()
     log(LOG_LEVEL_INFO, "Transmitted to Renode on the TX line");
 }
 
-RenodeAgent *Init() {
+RenodeAgent *initAgent() {
+    return new UARTWithLogger(&top->txd, &top->rxd, prescaler);
+}
+
+void initBus(RenodeAgent *agent) {
     AxiLite* bus = new AxiLite();
 
     //=================================================
@@ -96,7 +100,14 @@ RenodeAgent *Init() {
     //=================================================
     // Init peripheral
     //=================================================
-    return new UARTWithLogger(bus, &top->txd, &top->rxd, prescaler);
+    agent->addBus(bus);
+}
+
+RenodeAgent *Init() {
+    RenodeAgent *agent = initAgent();
+    agent->connectNative();
+    initBus(agent);
+    return agent;
 }
 
 int main(int argc, char **argv, char **env) {
@@ -113,8 +124,11 @@ int main(int argc, char **argv, char **env) {
     top->trace(tfp, 99);
     tfp->open("simx.vcd");
 #endif
-    RenodeAgent *uart = Init();
-    uart->simulate(atoi(argv[1]), atoi(argv[2]), address);
+    RenodeAgent *uart = initAgent();
+    uart->connect(atoi(argv[1]), atoi(argv[2]), address);
+    initBus(uart);
+    uart->simulate();
+
     top->final();
     exit(0);
 }

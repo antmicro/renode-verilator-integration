@@ -24,26 +24,35 @@ void evaluateModel()
     ibex->evaluateModel();
 }
 
-RenodeAgent *Init()
+CpuAgent *initAgent()
 {
     Verilated::commandArgs(0, (const char **)nullptr);
+    CpuAgent* agent = new CpuAgent();
+    return agent;
+}
 
+void initBus(CpuAgent *agent)
+{
     WishboneInitiator<uint32_t, uint32_t> *instructionFetchBus = new WishboneInitiator<uint32_t, uint32_t>();
     WishboneInitiator<uint32_t, uint32_t> *loadStoreBus = new WishboneInitiator<uint32_t, uint32_t>();
-
-    agent = new CpuAgent(instructionFetchBus);
-    agent->addBus(loadStoreBus);
 
     ibex = new Ibex();
 
     ibex->setInstructionFetchBus(*instructionFetchBus);
     ibex->setLoadStoreBus(*loadStoreBus);
 
+    agent->addBus(instructionFetchBus);
+    agent->addBus(loadStoreBus);
     agent->addCPU(ibex);
 
     instructionFetchBus->evaluateModel = evaluateModel;
     loadStoreBus->evaluateModel = evaluateModel;
+}
 
+RenodeAgent *Init() {
+    agent = initAgent();
+    agent->connectNative();
+    initBus(agent);
     return agent;
 }
 
@@ -56,8 +65,10 @@ int main(int argc, char **argv, char **env)
     }
     const char *address = argc < 4 ? "127.0.0.1" : argv[3];
 
-    Init();
-    agent->simulate(atoi(argv[1]), atoi(argv[2]), address);
+    agent = initAgent();
+    agent->connect(atoi(argv[1]), atoi(argv[2]), address);
+    initBus(agent);
+    agent->simulate();
 
     return 0;
 }

@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2021 Antmicro
+// Copyright (c) 2010-2025 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -34,7 +34,13 @@ void eval() {
     uart->eval();
 }
 
-RenodeAgent *Init() {
+UART *initAgent() {
+    const int litex_rxtx_reg = 0x800;
+    return new UART(&top->serial_tx, &top->serial_rx, prescaler, litex_rxtx_reg, &top->irq_uart0);
+}
+
+void initBus(RenodeAgent *agent)
+{
     Wishbone* bus = new Wishbone();
 
     //=================================================
@@ -60,8 +66,13 @@ RenodeAgent *Init() {
     //=================================================
     // Init peripheral
     //=================================================
-    const int litex_rxtx_reg = 0x800;
-    uart = new UART(bus, &top->serial_tx, &top->serial_rx, prescaler, litex_rxtx_reg, &top->irq_uart0);
+    agent->addBus(bus);
+}
+
+RenodeAgent *Init() {
+    uart = initAgent();
+    uart->connectNative();
+    initBus(uart);
     return uart;
 }
 
@@ -79,8 +90,11 @@ int main(int argc, char **argv, char **env) {
     top->trace(tfp, 99);
     tfp->open("simx.fst");
 #endif
-    Init();
-    uart->simulate(atoi(argv[1]), atoi(argv[2]), address);
+    uart = initAgent();
+    uart->connect(atoi(argv[1]), atoi(argv[2]), address);
+    initBus(uart);
+    uart->simulate();
+
     top->final();
     exit(0);
 }

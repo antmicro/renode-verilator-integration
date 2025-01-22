@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2021 Antmicro
+// Copyright (c) 2010-2025 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -11,12 +11,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #if VM_TRACE
-# include <verilated_vcd_c.h>
+#include <verilated_vcd_c.h>
 #endif
 #include "src/buses/axi.h"
 #include "src/renode.h"
 
-RenodeAgent *axi_ram;
+RenodeAgent *axi_ram = new RenodeAgent;
 Vaxi_ram *top = new Vaxi_ram;
 VerilatedVcdC *tfp;
 vluint64_t main_time = 0;
@@ -30,7 +30,8 @@ void eval() {
     top->eval();
 }
 
-RenodeAgent *Init() {
+void initAgent(RenodeAgent *agent)
+{
     Axi* bus = new Axi(32, 32);
 
     //=================================================
@@ -84,8 +85,13 @@ RenodeAgent *Init() {
     //=================================================
     // Init peripheral
     //=================================================
-    axi_ram = new RenodeAgent(bus);
-    bus->setAgent(axi_ram);
+
+    agent->addBus(bus);
+}
+
+RenodeAgent *Init() {
+    axi_ram->connectNative();
+    initAgent(axi_ram);
     return axi_ram;
 }
 
@@ -103,8 +109,11 @@ int main(int argc, char **argv, char **env) {
     top->trace(tfp, 99);
     tfp->open("simx.vcd");
 #endif
-    Init();
-    axi_ram->simulate(atoi(argv[1]), atoi(argv[2]), address);
+
+    axi_ram->connect(atoi(argv[1]), atoi(argv[2]), address);
+    initAgent(axi_ram);
+    axi_ram->simulate();
+
     top->final();
     exit(0);
 }

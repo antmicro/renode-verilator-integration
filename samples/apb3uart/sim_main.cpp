@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2021 Antmicro
+// Copyright (c) 2010-2025 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -34,15 +34,22 @@ void eval() {
     uart->eval();
 }
 
-RenodeAgent *Init() {
+UART *initAgent() {
     // These need static lifetime because we assign them to global pointers.
     // By having the initialization here we guarantee that any static initialization
     // from other compilation units (e. g. Verilator) is already done.
     static VerilatedContext context;
     static VApb3UartCtrl uart_ctrl_obj(&context);
-
     uart_ctrl = &uart_ctrl_obj;
 
+    const int murax_rxtx_reg = 0x0;
+    static UART uart_obj = UART(&uart_ctrl->io_uart_txd, &uart_ctrl->io_uart_rxd, prescaler, murax_rxtx_reg, &uart_ctrl->io_interrupt);
+
+    return &uart_obj;
+}
+
+void initBus(RenodeAgent *agent)
+{
     APB3* bus = new APB3();
 
     //=================================================
@@ -66,9 +73,13 @@ RenodeAgent *Init() {
     //=================================================
     // Init peripheral
     //=================================================
-    const int murax_rxtx_reg = 0x0;
-    static UART uart_obj = UART(bus, &uart_ctrl->io_uart_txd, &uart_ctrl->io_uart_rxd, prescaler, murax_rxtx_reg, &uart_ctrl->io_interrupt);
-    uart = &uart_obj;
+    agent->addBus(bus);
+}
+
+RenodeAgent *Init() {
+    uart = initAgent();
+    uart->connectNative();
+    initBus(uart);
     return uart;
 }
 
@@ -79,7 +90,6 @@ int main(int argc, char **argv, char **env) {
     }
     const char *address = argc < 4 ? "127.0.0.1" : argv[3];
 
-    Init();
     Verilated::commandArgs(argc, argv);
 #if VM_TRACE
     Verilated::traceEverOn(true);
@@ -87,7 +97,11 @@ int main(int argc, char **argv, char **env) {
     uart_ctrl->trace(tfp, 99);
     tfp->open("simx.fst");
 #endif
-    uart->simulate(atoi(argv[1]), atoi(argv[2]), address);
+
+    uart = initAgent();
+    uart->connect(atoi(argv[1]), atoi(argv[2]), address);
+    initBus(uart);
+    uart->simulate();
     uart_ctrl->final();
 
 #if VM_TRACE

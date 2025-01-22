@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2022 Antmicro
+// Copyright (c) 2010-2025 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -25,7 +25,7 @@
 #include "src/buses/axi.h"
 #include "src/renode_bus.h"
 
-RenodeAgent *isp;
+RenodeAgent *isp = new RenodeAgent;
 Vfpga_isp *top = new Vfpga_isp;
 vluint64_t main_time = 0;
 
@@ -43,7 +43,7 @@ void eval() {
     isp->handleInterrupts();
 }
 
-RenodeAgent *Init() {
+void initAgent(RenodeAgent *agent) {
     AxiSlave* slaveBus = new AxiSlave(32, 32);
     Axi* axi = new Axi(32, 32);
 
@@ -152,11 +152,8 @@ RenodeAgent *Init() {
     //=================================================
     // Init peripheral
     //=================================================
-    isp = new RenodeAgent(axi);
-    isp->addBus(slaveBus);
-
-    slaveBus->setAgent(isp);
-    axi->setAgent(isp);
+    agent->addBus(axi);
+    agent->addBus(slaveBus);
 
     isp->registerInterrupt(&top->irq_dmaIn, 0);
     isp->registerInterrupt(&top->irq_dmaOut, 1);
@@ -167,7 +164,11 @@ RenodeAgent *Init() {
     top->trace(tfp, 99);
     tfp->open(DEF_TRACE_FILEPATH);
 #endif
+}
 
+RenodeAgent *Init() {
+    isp->connectNative();
+    initAgent(isp);
     return isp;
 }
 
@@ -179,9 +180,10 @@ int main(int argc, char **argv, char **env) {
     const char *address = argc < 4 ? "127.0.0.1" : argv[3];
 
     Verilated::commandArgs(argc, argv);
-    Init();
+    isp->connect(atoi(argv[1]), atoi(argv[2]), address);
+    initAgent(isp);
     isp->reset();
-    isp->simulate(atoi(argv[1]), atoi(argv[2]), address);
+    isp->simulate();
     top->final();
     exit(0);
 }

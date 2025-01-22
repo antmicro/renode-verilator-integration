@@ -1,22 +1,15 @@
 diff --git a/src/Plugins/CoSimulationPlugin/IntegrationLibrary/src/renode_bus.cpp b/src/Plugins/CoSimulationPlugin/IntegrationLibrary/src/renode_bus.cpp
-index 2e425a734..5519bbce7 100644
 --- a/src/Plugins/CoSimulationPlugin/IntegrationLibrary/src/renode_bus.cpp
 +++ b/src/Plugins/CoSimulationPlugin/IntegrationLibrary/src/renode_bus.cpp
-@@ -179,6 +179,7 @@ void RenodeAgent::handleInterrupts(void)
-     }
- }
- 
+@@ -198,8 +198,11 @@
 +#include <unistd.h>
- void RenodeAgent::simulate(int receiverPort, int senderPort, const char* address)
+ void RenodeAgent::simulate()
  {
-     renodeAgent = this;
-@@ -188,7 +189,9 @@ void RenodeAgent::simulate(int receiverPort, int senderPort, const char* address
      Protocol* result;
      reset();
  
 +    int iter = 0;
-     while(channel->getIsConnected()) {
+     while(communicationChannel->isConnected()) {
 +        if(++iter > 1000) sleep(600);
          result = receive();
          handleRequest(result);
-         delete result;

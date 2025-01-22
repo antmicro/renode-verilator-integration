@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2010-2021 Antmicro
+// Copyright (c) 2010-2025 Antmicro
 //
 //  This file is licensed under the MIT License.
 //  Full license text is available in 'LICENSE' file.
@@ -19,7 +19,7 @@
 #include "src/buses/axilite.h"
 #include "src/renode_bus.h"
 
-RenodeAgent *fastvdma;
+RenodeAgent *fastvdma = new RenodeAgent;
 VDMATop *top = new VDMATop;
 VerilatedVcdC *tfp;
 vluint64_t main_time = 0;
@@ -34,7 +34,8 @@ void eval() {
     fastvdma->handleInterrupts();
 }
 
-RenodeAgent *Init() {
+void initAgent(RenodeAgent *agent)
+{
     AxiLite* bus = new AxiLite();
     AxiSlave* slaveBus = new AxiSlave(32, 32);
 
@@ -121,13 +122,16 @@ RenodeAgent *Init() {
     //=================================================
     // Init peripheral
     //=================================================
-    fastvdma = new RenodeAgent(bus);
-    fastvdma->addBus(slaveBus);
+    agent->addBus(bus);
+    agent->addBus(slaveBus);
 
-    fastvdma->registerInterrupt(&top->io_irq_writerDone, 0);
-    fastvdma->registerInterrupt(&top->io_irq_readerDone, 0);
+    agent->registerInterrupt(&top->io_irq_writerDone, 0);
+    agent->registerInterrupt(&top->io_irq_readerDone, 0);
+}
 
-    slaveBus->setAgent(fastvdma);
+RenodeAgent *Init() {
+    fastvdma->connectNative();
+    initAgent(fastvdma);
     return fastvdma;
 }
 
@@ -145,9 +149,12 @@ int main(int argc, char **argv, char **env) {
     top->trace(tfp, 99);
     tfp->open("simx.vcd");
 #endif
-    Init();
+
+    fastvdma->connect(atoi(argv[1]), atoi(argv[2]), address);
+    initAgent(fastvdma);
+    fastvdma->simulate();
     fastvdma->reset();
-    fastvdma->simulate(atoi(argv[1]), atoi(argv[2]), address);
+
     top->final();
     exit(0);
 }
