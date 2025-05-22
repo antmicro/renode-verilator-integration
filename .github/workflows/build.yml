@@ -54,7 +54,7 @@ jobs:
           python-version: '3.11.5' # newer version breaks pip on Windows
 
       - name: Build Renode
-        uses: antmicro/renode-test-action@v4
+        uses: antmicro/renode-test-action@v5.0.0
         with:
           renode-repository: ${{ inputs.renode_gitrepo || 'https://github.com/renode/renode' }}
           renode-revision: ${{ inputs.renode_gitrev || 'master' }}
@@ -107,7 +107,7 @@ jobs:
           python-version: '3.11.5' # newer version breaks pip on Windows
 
       - name: Build Renode
-        uses: antmicro/renode-test-action@v4
+        uses: antmicro/renode-test-action@v5.0.0
         with:
           renode-repository: ${{ inputs.renode_gitrepo || 'https://github.com/renode/renode' }}
           renode-revision: ${{ inputs.renode_gitrev || 'master' }}
